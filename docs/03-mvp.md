@@ -4,6 +4,8 @@ Statut : ✅ **Validée**
 
 Ce document découpe les spécifications fonctionnelles (Phase 2) en un **périmètre livrable en premier** (MVP) et un **backlog d'évolutions**. Objectif : livrer vite une valeur réelle (mise en relation Intervenants ↔ Organisateurs) sans sur-construire.
 
+> **Amendement du 2026-08-27 (pendant la Phase 6 — Modèle de données)** : la messagerie interne (D5, Phase 2 §4.4) est retirée du périmètre MVP. Le MVP se concentre sur l'**annuaire** (recherche, consultation, fiches mission) ; la mise en relation se fait via un **formulaire de contact simple par email** (sans conversation stockée ni messagerie), cf. §3.1 et nouvelle décision D30. La messagerie interne complète reste l'objectif produit cible (D5 non remise en cause sur le fond) mais est déplacée en évolution post-MVP. Voir `docs/DECISIONS.md` (D-005 note d'amendement, D-030).
+
 ## 1. Objectif de la phase
 
 Trancher précisément ce qui est **dans** la v1 et ce qui est **explicitement reporté**, avec des critères d'acceptation vérifiables, pour que les phases UX/Architecture/Modèle de données/Sécurité travaillent sur un périmètre stable.
@@ -44,13 +46,12 @@ Trancher précisément ce qui est **dans** la v1 et ce qui est **explicitement r
 - Annuaire public (lecture seule, sans compte) des fiches publiées et profils Intervenants actifs.
 - Recherche texte + filtres (thématique, public, zone géographique, format).
 
-**Mise en relation & messagerie**
-- Ouverture de conversation par un Organisateur vers un Intervenant (depuis une fiche).
-- Messagerie interne texte, indicateur lu/non lu.
-- Signalement d'une conversation/d'un message.
+**Mise en relation (annuaire only — amendé)**
+- Formulaire de contact simple sur une fiche mission ou un profil Intervenant : l'Organisateur saisit un message, il est envoyé par email à l'Intervenant (adresse non exposée publiquement), sans conversation stockée ni fil de discussion.
+- Limitation anti-spam basique (ex. throttling par IP/compte) sur ce formulaire.
 
 **Notifications**
-- In-app (centre de notifications) + email pour : validation/rejet d'inscription, nouveau message, nouvelle demande de contact.
+- In-app (centre de notifications) + email pour : validation/rejet d'inscription, nouvelle demande de contact reçue.
 
 **Conformité minimale**
 - Mentions légales, politique de confidentialité, consentement RGPD à l'inscription.
@@ -58,6 +59,7 @@ Trancher précisément ce qui est **dans** la v1 et ce qui est **explicitement r
 
 ### 3.2 Explicitement reporté après le MVP
 
+- **Messagerie interne complète** (conversations, fil de discussion, indicateur lu/non lu, signalement de message) — *ajouté lors de l'amendement du 2026-08-27*. Le MVP se limite au formulaire de contact simple ci-dessus.
 - Avis/réputation (D8).
 - Système d'appel à candidatures (option B de D1).
 - Paiement, abonnement, commission (D2).
@@ -82,8 +84,7 @@ Trancher précisément ce qui est **dans** la v1 et ce qui est **explicitement r
 Proposition d'indicateurs, à confirmer :
 - Nombre de structures inscrites et validées (Intervenants / Organisateurs) sur la région pilote.
 - Nombre de fiches mission publiées.
-- Nombre de conversations initiées.
-- Taux de réponse des Intervenants aux demandes de contact.
+- Nombre de demandes de contact envoyées via le formulaire.
 - Délai moyen de validation d'une inscription par les admins.
 
 ## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
@@ -94,6 +95,7 @@ Proposition d'indicateurs, à confirmer :
 | D15 | **Illimité.** Pas de plafond de fiches mission par Intervenant ; la modération a posteriori (signalement + action admin) suffit à gérer les abus. |
 | D16 | **Recherche via la base de données** (index texte simple), pas de moteur dédié au MVP. |
 | D17 | **Pas d'engagement de délai formel** communiqué aux utilisateurs pour la validation admin au MVP. Le délai de traitement reste néanmoins suivi comme métrique de vigilance interne (cf. §7 risques). |
+| D30 *(amendement)* | **Contact par formulaire email simple**, sans messagerie interne au MVP (cf. note d'amendement ci-dessus). L'Organisateur envoie un message via un formulaire sur la fiche/le profil ; il est transmis par email à l'Intervenant. Pas de conversation persistée en base au MVP. |
 
 ## 7. Risques identifiés (niveau MVP)
 

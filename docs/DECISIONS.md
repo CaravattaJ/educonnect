@@ -41,8 +41,8 @@ Format :
 ## D-005 — Canal de mise en relation
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit
-- Décision : Les échanges post mise-en-relation restent dans la messagerie interne de la plateforme (pas de partage libre de coordonnées au MVP).
-- Conséquences : Une brique de messagerie interne (conversations liées à une mise en relation) est nécessaire dès le MVP ; prévoir modération/signalement des messages.
+- Décision : Les échanges post mise-en-relation restent dans la messagerie interne de la plateforme (pas de partage libre de coordonnées au MVP). *Vision produit cible confirmée.*
+- Conséquences : Une brique de messagerie interne (conversations liées à une mise en relation) fait partie de la vision produit. **Amendement du 2026-08-27 (Phase 6)** : son implémentation est repoussée après le MVP — voir D-030. Le MVP livre un formulaire de contact simple par email à la place, sans exposer les coordonnées de l'Intervenant (cohérent avec l'esprit de D-005 : pas de partage libre de coordonnées).
 
 ## D-006 — Nom du produit
 - Date : 2026-08-27
@@ -163,3 +163,33 @@ Format :
 - Phase : 5 — Architecture technique
 - Décision : `production` + previews automatiques par pull request (Vercel), pas de `staging` persistant dédié au MVP.
 - Conséquences : Aucune infrastructure supplémentaire à gérer pour un environnement de préproduction dédié au lancement.
+
+## D-026 — Séparation `User` / `Structure`
+- Date : 2026-08-27
+- Phase : 6 — Modèle de données
+- Décision : `User` (authentification, rôle, statut) séparé de `Structure` (profil métier), relation 1-1 pour les rôles Intervenant/Organisateur.
+- Conséquences : Anonymisation ciblée plus simple à la suppression de compte (D-012) ; auth indépendante des évolutions du profil.
+
+## D-027 — Référentiel géographique
+- Date : 2026-08-27
+- Phase : 6 — Modèle de données
+- Décision : Référentiel structuré complet (régions/départements/communes françaises), plutôt qu'un texte libre.
+- Conséquences : Nécessite de charger/maintenir un référentiel géographique (ex. données INSEE/API Géo officielle) dans la base au MVP. Ouvre la voie à un filtrage fiable et à une future carte interactive/recherche par rayon.
+
+## D-028 — Conversations multiples sur une même fiche
+- Date : 2026-08-27
+- Phase : 6 — Modèle de données
+- Décision : Sans objet au MVP — la messagerie/les conversations sont retirées du périmètre MVP (cf. D-030). Point à retrancher lorsque la messagerie sera réintroduite en évolution post-MVP.
+- Conséquences : Aucune côté MVP. À rouvrir explicitement lors du cadrage de l'itération "messagerie".
+
+## D-029 — Modélisation des références polymorphes
+- Date : 2026-08-27
+- Phase : 6 — Modèle de données
+- Décision : `targetType` (enum) + `targetId` (UUID), sans contrainte de clé étrangère native ; intégrité garantie au niveau applicatif (Prisma + tests).
+- Conséquences : Utilisé pour `Report` et `AdminAction`. Couvrir par des tests d'intégration dès la Phase 10 pour éviter les références orphelines.
+
+## D-030 — Contact sans messagerie au MVP *(amendement)*
+- Date : 2026-08-27
+- Phase : 6 — Modèle de données (amende la Phase 3)
+- Décision : Retrait de la messagerie interne du MVP (cf. amendement de D-005). Le contact Organisateur → Intervenant se fait via un formulaire simple : message saisi sur la fiche/le profil, envoyé par email à l'Intervenant, sans conversation persistée en base.
+- Conséquences : Le modèle de données MVP remplace les entités `Conversation`/`Message` par une entité unique `ContactRequest` (cf. `docs/06-modele-donnees.md`). La messagerie interne complète (D-005, D-023) redevient pertinente lors d'une itération post-MVP dédiée — le modèle actuel n'exclut pas cette évolution.
