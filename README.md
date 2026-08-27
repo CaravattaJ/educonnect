@@ -10,7 +10,9 @@ Le cadrage (Phases 1-9) est validé et amendé — voir [`docs/00-process.md`](d
 
 ## Développement local
 
-Prérequis : Node.js ≥ 20, [pnpm](https://pnpm.io) ≥ 10, Docker.
+Prérequis : Node.js ≥ 20, [pnpm](https://pnpm.io) ≥ 10, et une base **PostgreSQL** accessible en local (via Docker, **ou** une installation native — les deux fonctionnent).
+
+### Configuration initiale (une seule fois)
 
 ```bash
 # 1. Installer les dépendances
@@ -22,16 +24,40 @@ cp .env.example .env.local
 # (Google OAuth, Resend, Sentry) sont optionnelles en local : les fonctionnalités
 # correspondantes se désactivent proprement si elles sont absentes.
 
-# 3. Démarrer PostgreSQL en local
+# 3. Avoir une base de données PostgreSQL vide et son URL dans DATABASE_URL (.env.local)
+```
+
+Pour la base, deux options équivalentes :
+
+**Option A — Docker** (si disponible) :
+```bash
 docker compose up -d
+# DATABASE_URL déjà correcte par défaut dans .env.example pour cette option.
+```
 
-# 4. Appliquer le schéma et charger les données de référence
-pnpm prisma:migrate
-pnpm prisma:seed
+**Option B — PostgreSQL déjà installé nativement** (ex. Windows, sans Docker) : créer une base vide une fois, puis pointer `DATABASE_URL` dessus.
+```bash
+# Depuis psql (ou pgAdmin, ou l'outil de votre choix) :
+psql -U postgres -c "CREATE DATABASE educonnect;"
+```
+Puis dans `.env.local` :
+```
+DATABASE_URL="postgresql://postgres:VOTRE_MOT_DE_PASSE@localhost:5432/educonnect"
+```
+(adapter l'utilisateur/mot de passe à votre installation locale).
 
-# 5. Lancer le serveur de développement
+Enfin, créer votre compte Admin (une seule fois) :
+```bash
+pnpm create-admin
+```
+
+### Usage quotidien
+
+```bash
 pnpm dev
 ```
+
+C'est la seule commande nécessaire à chaque session : `pnpm dev` applique automatiquement les migrations et les données de référence (thématiques, tranches d'âge) avant de démarrer le serveur — sans risque à relancer, ces étapes sont idempotentes.
 
 L'application est alors disponible sur http://localhost:3000.
 
@@ -44,6 +70,7 @@ L'application est alors disponible sur http://localhost:3000.
 | `pnpm test` | Tests unitaires (Vitest) |
 | `pnpm test:e2e` | Tests end-to-end (Playwright) |
 | `pnpm build` | Build de production |
+| `pnpm create-admin` | Créer un compte Administrateur (CLI interactif) |
 | `pnpm prisma:studio` | Interface d'exploration de la base de données |
 
 ### Note sur l'épic E0
