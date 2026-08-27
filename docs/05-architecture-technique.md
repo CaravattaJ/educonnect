@@ -2,6 +2,8 @@
 
 Statut : ✅ **Validée**
 
+> **Note (2026-08-27, pivot de modèle)** : le passage à un modèle "annuaire d'activités" avec deux rôles (Organisateur/Admin — cf. `docs/01-cadrage-produit.md`) ne remet pas en cause les choix de cette phase (stack, hébergement, ORM, auth). Seul le modèle de rôles applicatif (Phase 7 §4) et le modèle de données (Phase 6) sont impactés.
+
 Ce document traduit le MVP (Phase 3) et l'UX (Phase 4) en choix techniques concrets. Il sert de référence directe pour l'organisation du dépôt (Phase 8) et le développement (Phase 10). Les recommandations visent la simplicité et la maintenabilité pour une petite équipe/un lancement pilote, pas la scalabilité massive prématurée.
 
 ## 1. Objectif de la phase
