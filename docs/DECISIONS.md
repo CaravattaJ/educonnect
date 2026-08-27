@@ -115,3 +115,21 @@ Format :
 - Phase : 3 — Définition du MVP
 - Décision : Pas d'engagement de délai formel communiqué aux utilisateurs au MVP.
 - Conséquences : Le délai de traitement des inscriptions reste suivi en interne comme métrique de vigilance (risque de goulot d'étranglement, cf. Phase 3 §7).
+
+## D-018 — Outil de maquettage
+- Date : 2026-08-27
+- Phase : 4 — UX
+- Décision : Pas de maquettes graphiques Figma avant le développement ; les wireframes textuels/structurels de `docs/04-ux.md` suffisent pour cadrer le développement.
+- Conséquences : Le rendu visuel réel n'est validé qu'une fois le code écrit — mitigé par le choix d'un UI kit éprouvé (D-019) et une validation rapide des premiers écrans réels en itération 1.
+
+## D-019 — UI kit
+- Date : 2026-08-27
+- Phase : 4 — UX
+- Décision : Utilisation d'une bibliothèque de composants UI existante plutôt que du sur-mesure complet.
+- Conséquences : Le choix précis (ex. shadcn/ui, MUI, Ant Design...) est fait en Phase 5 selon la stack technique retenue.
+
+## D-020 — Registre de communication
+- Date : 2026-08-27
+- Phase : 4 — UX
+- Décision : Vouvoiement, registre institutionnel et chaleureux pour tous les contenus (libellés, emails, messages d'erreur).
+- Conséquences : Guide de contenu implicite pour toute rédaction de texte UI/emails dans les phases suivantes.
