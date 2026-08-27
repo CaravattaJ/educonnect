@@ -1,6 +1,6 @@
 # Phase 1 — Cadrage produit
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 ## 1. Objectif de la phase
 
@@ -33,9 +33,17 @@ Besoins probables : visibilité, gestion de son catalogue d'interventions, gesti
 Exemples : enseignant, directeur d'école, référent périscolaire, bibliothécaire, coordinateur d'association éducative.
 Besoins probables : trouver rapidement un intervenant pertinent (thème, niveau scolaire, zone, budget, dates), comparer, contacter, organiser logistiquement, garder une trace administrative.
 
-### 4.3 Rôle(s) additionnel(s) potentiel(s) — **à trancher**
-- Un rôle **administrateur/modérateur** de la plateforme est quasi certain (modération des annonces, gestion des signalements, vérification des structures).
-- Un rôle **tutelle/collectivité** (ex. mairie, académie) qui référencerait ou financerait des interventions ? — optionnel, probablement hors MVP.
+### 4.3 Rôle "Administrateur" — confirmé (cf. décision D3)
+La plateforme intègre dès le MVP un **espace d'administration** destiné à une équipe interne (plusieurs comptes admin), avec au minimum :
+- Validation manuelle des nouvelles structures (Intervenants et Organisateurs) avant publication de leur profil.
+- Modération des fiches "mission"/offre et des signalements.
+- Édition/correction des informations de mission et des comptes utilisateurs (droit de modifier au nom d'un utilisateur, ex. correction d'une erreur, mise en conformité).
+- Gestion des comptes (suspension, réactivation, suppression).
+
+*Le détail des permissions (rôle admin unique vs. sous-rôles type "modérateur"/"super-admin") sera précisé en phase Spécifications fonctionnelles.*
+
+### 4.4 Rôle additionnel potentiel — hors MVP
+- Un rôle **tutelle/collectivité** (ex. mairie, académie) qui référencerait ou financerait des interventions — optionnel, probablement hors MVP.
 
 ## 5. Périmètre proposé
 
@@ -54,7 +62,18 @@ Besoins probables : trouver rapidement un intervenant pertinent (thème, niveau 
 - Application mobile native (le MVP vise le web, responsive).
 - Multi-langue (français uniquement au démarrage, sauf besoin exprimé).
 
-## 6. Décisions à prendre pour valider cette phase
+## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
+
+| # | Décision retenue |
+|---|---|
+| D1 | **Annuaire + messagerie**. Le modèle "appel à candidatures" est une évolution possible mais n'est pas exclu par le modèle de données. |
+| D2 | **Gratuit au lancement.** Pas de paiement en ligne au MVP. Monétisation (abonnement/commission) réévaluée plus tard. |
+| D3 | **Vérification manuelle avant publication + espace administrateur** dédié à la modération (validation des structures, gestion des signalements, édition des fiches "mission"/offre et des comptes utilisateurs). Un rôle **Administrateur** est donc confirmé dès le MVP, avec plusieurs comptes admin possibles (équipe de modération). |
+| D4 | **Lancement en région pilote.** La zone géographique n'est pas codée en dur : c'est un filtre de recherche standard (région/département/ville). Le ciblage "région pilote" est une décision de mise sur le marché (communication, onboarding initial), pas une contrainte technique. Publics visés : scolaire + périscolaire (écoles, centres de loisirs, médiathèques, associations éducatives). *Le nom de la région pilote reste à préciser (marketing), non bloquant techniquement.* |
+| D5 | **Messagerie interne uniquement** pour les échanges après mise en relation — pas de partage libre de coordonnées au MVP (assouplissement possible plus tard). |
+| D6 | Nom "EduConnect" conservé à titre provisoire pour la suite du projet (non tranché explicitement, non bloquant). |
+
+### Détail des options envisagées (archive)
 
 ### D1 — Modèle de mise en relation
 Comment se fait la rencontre offre/demande ?
@@ -114,7 +133,9 @@ Avant de valider cette phase, merci de trancher (ou de confirmer les recommandat
 
 ## 10. Critères de validation de la phase
 
-- [ ] D1 à D6 tranchés (au moins une intention claire, même provisoire).
-- [ ] Vision, problème, personas jugés fidèles par l'utilisateur.
-- [ ] Périmètre in/out validé ou amendé.
-- [ ] Risques jugés complets à ce stade (ajouts possibles).
+- [x] D1 à D6 tranchés (au moins une intention claire, même provisoire).
+- [x] Vision, problème, personas jugés fidèles par l'utilisateur.
+- [x] Périmètre in/out validé (ajout du rôle Administrateur / espace de modération suite à D3).
+- [x] Risques jugés complets à ce stade (ajouts possibles en phase 2).
+
+**Phase 1 validée le 2026-08-27.** → Passage à la Phase 2 (Spécifications fonctionnelles).

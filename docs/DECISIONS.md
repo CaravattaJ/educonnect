@@ -14,4 +14,38 @@ Format :
 
 ---
 
-*(Aucune décision validée pour l'instant — en attente de validation de la Phase 1.)*
+## D-001 — Modèle de mise en relation
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : Modèle "annuaire + messagerie" : les Intervenants publient des fiches/offres, les Organisateurs recherchent et contactent directement via une messagerie interne.
+- Conséquences : Le modèle de données doit rester ouvert à une évolution vers un système d'appel à candidatures, sans l'implémenter au MVP.
+
+## D-002 — Modèle économique
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : Plateforme gratuite au lancement, pour tous les rôles. Pas de paiement en ligne au MVP.
+- Conséquences : Pas de brique de facturation/paiement dans l'architecture MVP. Prévoir néanmoins un champ de statut de compte extensible (ex. `plan`) pour ne pas bloquer une monétisation future.
+
+## D-003 — Vérification des structures et administration
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : Vérification manuelle par une équipe d'administration avant publication d'un profil. Un espace d'administration est livré dès le MVP, avec gestion des comptes admin (plusieurs comptes possibles), modération des structures/missions et droit d'édition sur les comptes et les fiches mission.
+- Conséquences : Rôle `admin` obligatoire dans le modèle de données/permissions dès le MVP. Un flux d'inscription "en attente de validation" doit exister côté Intervenant et Organisateur. Impacts sécurité (droits élevés à protéger, traçabilité des actions admin — cf. phase Sécurité).
+
+## D-004 — Portée géographique et publics
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : Lancement ciblé sur une région pilote (nom à préciser ultérieurement, décision marketing), mais sans restriction technique : la localisation est un filtre de recherche standard, pas une contrainte codée en dur. Publics visés : scolaire et périscolaire (écoles, centres de loisirs, médiathèques, associations éducatives).
+- Conséquences : Le modèle de données doit inclure une notion de localisation structurée (région/département/ville) dès le MVP pour permettre le filtrage, même si la mise sur le marché reste régionale au départ.
+
+## D-005 — Canal de mise en relation
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : Les échanges post mise-en-relation restent dans la messagerie interne de la plateforme (pas de partage libre de coordonnées au MVP).
+- Conséquences : Une brique de messagerie interne (conversations liées à une mise en relation) est nécessaire dès le MVP ; prévoir modération/signalement des messages.
+
+## D-006 — Nom du produit
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit
+- Décision : "EduConnect" est conservé à titre provisoire. Non tranché définitivement, non bloquant pour la suite.
+- Conséquences : Aucune, à date.
