@@ -37,6 +37,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "passwordHash" TEXT,
     "googleId" TEXT,
+    "emailVerifiedAt" TIMESTAMP(3),
     "role" "UserRole" NOT NULL,
     "accountStatus" "AccountStatus" NOT NULL DEFAULT 'EN_ATTENTE',
     "rejectionReason" TEXT,
@@ -45,6 +46,18 @@ CREATE TABLE "User" (
     "anonymizedAt" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "EmailVerificationToken" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "tokenHash" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "usedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "EmailVerificationToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -240,6 +253,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_googleId_key" ON "User"("googleId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "EmailVerificationToken_tokenHash_key" ON "EmailVerificationToken"("tokenHash");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Structure_userId_key" ON "Structure"("userId");
 
 -- CreateIndex
@@ -256,6 +272,9 @@ CREATE UNIQUE INDEX "Department_code_key" ON "Department"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "City_inseeCode_key" ON "City"("inseeCode");
+
+-- AddForeignKey
+ALTER TABLE "EmailVerificationToken" ADD CONSTRAINT "EmailVerificationToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Structure" ADD CONSTRAINT "Structure_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

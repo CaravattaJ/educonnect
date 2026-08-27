@@ -32,6 +32,7 @@ model User {
   email            String        @unique
   passwordHash     String?
   googleId         String?       @unique
+  emailVerifiedAt  DateTime?
   role             UserRole
   accountStatus    AccountStatus @default(EN_ATTENTE)
   rejectionReason  String?
@@ -39,11 +40,24 @@ model User {
   updatedAt        DateTime      @updatedAt
   anonymizedAt     DateTime?
 
-  structure        Structure?
-  resolvedReports  Report[]      @relation("ReportResolver")
-  reports          Report[]      @relation("ReportAuthor")
-  adminActions     AdminAction[]
-  notifications    Notification[]
+  structure                Structure?
+  emailVerificationTokens  EmailVerificationToken[]
+  resolvedReports          Report[]      @relation("ReportResolver")
+  reports                  Report[]      @relation("ReportAuthor")
+  adminActions             AdminAction[]
+  notifications            Notification[]
+}
+
+// Jetons de vérification d'email (E1) — seul le hash (SHA-256) du jeton est stocké,
+// jamais la valeur en clair transmise par email. Un jeton est à usage unique et expire.
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 }
 
 model Structure {
