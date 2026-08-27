@@ -21,8 +21,8 @@ Ce document décrit la façon dont le produit **EduConnect** est construit : par
 | # | Phase | Fichier | Statut |
 |---|-------|---------|--------|
 | 1 | Cadrage produit | `01-cadrage-produit.md` | ✅ Validée (2026-08-27) |
-| 2 | Spécifications fonctionnelles | `02-specifications-fonctionnelles.md` | 🟡 En cours |
-| 3 | Définition du MVP | `03-mvp.md` | ⏳ À venir |
+| 2 | Spécifications fonctionnelles | `02-specifications-fonctionnelles.md` | ✅ Validée (2026-08-27) |
+| 3 | Définition du MVP | `03-mvp.md` | 🟡 En cours |
 | 4 | UX | `04-ux.md` | ⏳ À venir |
 | 5 | Architecture technique | `05-architecture-technique.md` | ⏳ À venir |
 | 6 | Modèle de données | `06-modele-donnees.md` | ⏳ À venir |

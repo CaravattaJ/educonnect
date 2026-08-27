@@ -49,3 +49,45 @@ Format :
 - Phase : 1 — Cadrage produit
 - Décision : "EduConnect" est conservé à titre provisoire. Non tranché définitivement, non bloquant pour la suite.
 - Conséquences : Aucune, à date.
+
+## D-007 — Cumul de rôles sur un compte
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Un compte a un type unique (Intervenant *ou* Organisateur). Décision retenue par défaut (option recommandée), le retour utilisateur n'ayant pas explicitement contesté ce point.
+- Conséquences : Modèle de permissions simple (un rôle = un compte). À réévaluer si un besoin explicite de cumul apparaît en Phase 3 ou au-delà.
+
+## D-008 — Avis / réputation
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Reporté après le MVP.
+- Conséquences : Aucune brique de notation/avis dans le modèle de données du MVP.
+
+## D-009 — Sous-rôles administrateur
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Rôle admin unique au MVP (pas de distinction Modérateur/Super-admin).
+- Conséquences : Un seul rôle `admin` dans le modèle de permissions ; granularité plus fine réévaluable plus tard.
+
+## D-010 — Taxonomie thématiques/publics
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Liste fermée, gérée par les administrateurs (pas de saisie libre par les Intervenants).
+- Conséquences : Nécessite une interface d'administration pour gérer cette taxonomie dès le MVP ; impacte le modèle de données (table de référence).
+
+## D-011 — Canaux de notification
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : In-app + email dès le MVP.
+- Conséquences : Nécessite un service d'envoi d'email transactionnel dans l'architecture (Phase 5).
+
+## D-012 — Suppression de compte (RGPD)
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Anonymisation des données personnelles à la suppression, conservation des métadonnées de modération (signalements, actions admin).
+- Conséquences : À détailler précisément en Phase 7 — Sécurité (quelles données sont anonymisées, durée de conservation des métadonnées).
+
+## D-013 — Visibilité de l'annuaire
+- Date : 2026-08-27
+- Phase : 2 — Spécifications fonctionnelles
+- Décision : Annuaire public consultable sans compte (données non sensibles uniquement). Seuls les comptes connectés et validés (statut "actif") peuvent créer une fiche mission ; les visiteurs sont strictement en lecture.
+- Conséquences : Nécessite une distinction claire dans l'API/backend entre données publiques et données réservées aux comptes connectés (coordonnées de contact notamment, protégées derrière la messagerie interne, cf. D-005).

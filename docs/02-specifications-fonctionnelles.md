@@ -1,6 +1,6 @@
 # Phase 2 — Spécifications fonctionnelles
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document s'appuie sur les décisions validées en Phase 1 (`docs/DECISIONS.md`, D1-D6) : modèle annuaire + messagerie, gratuit au lancement, vérification manuelle + espace admin, portée région pilote avec filtre géographique, messagerie interne uniquement.
 
@@ -116,29 +116,19 @@ Décrire précisément les rôles, les parcours, les fonctionnalités et les rè
 | Ambiguïté sur le cumul de rôles (D7) bloque la conception du modèle de données | Élevée si non tranché | Élevé | Trancher D7 avant la Phase 3 |
 | Absence de "clôture" formelle d'une mise en relation rend le suivi/statistiques difficile | Faible au MVP, plus gênant ensuite | Faible | Noter comme évolution possible (statut de conversation) sans bloquer le MVP |
 
-## 8. Décisions à prendre pour valider cette phase
+## 8. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D7 — Cumul de rôles sur un même compte
-- **Option A (recommandée)** : un compte a un type unique (Intervenant *ou* Organisateur), choisi à l'inscription. Une structure qui est les deux crée deux comptes distincts. Plus simple à modérer et à sécuriser (permissions).
-- **Option B** : un compte peut cumuler les deux rôles. Plus flexible pour l'utilisateur mais complique les permissions, l'UX (changement de contexte) et la modération.
+| # | Décision retenue |
+|---|---|
+| D7 | **Un type par compte** (Option A, valeur par défaut retenue). Le retour utilisateur a surtout confirmé le modèle de permissions global (cf. D13 : visiteurs en lecture seule, seuls les comptes connectés **et validés** peuvent créer une fiche mission) sans trancher explicitement le cumul de rôles. Décision non contestée → on retient l'option recommandée ; à amender si besoin en Phase 3/6. |
+| D8 | **Reporté après le MVP.** Pas d'avis/réputation au lancement. |
+| D9 | **Rôle admin unique** au MVP (pas de distinction Modérateur/Super-admin). |
+| D10 | **Liste fermée** de thématiques/publics, gérée par les administrateurs. |
+| D11 | **In-app + email** dès le MVP. Implique un service d'envoi d'email transactionnel (cf. Phase 5 — Architecture). |
+| D12 | **Anonymisation** des données personnelles à la suppression, avec conservation des métadonnées de modération (signalements, actions admin) à des fins de traçabilité/litiges. À détailler en Phase 7 — Sécurité. |
+| D13 | **Annuaire public**, consultable sans compte. Seules les données non sensibles sont exposées (pas de coordonnées directes) ; le contact réel passe par la messagerie interne après connexion (cohérent avec D5). Seuls les comptes **connectés et validés** (statut "actif", cf. D3) peuvent créer une fiche mission — les visiteurs sont strictement en lecture. |
 
-### D8 — Avis/réputation au MVP ou non
-- Inclus dès le MVP, ou reporté à une itération suivante ? Impacte le modèle de données et la charge de modération dès le lancement.
-
-### D9 — Sous-rôles administrateur
-- Un rôle admin unique (tous les droits), ou distinction **Modérateur** (signalements, validations) / **Super-admin** (gestion des comptes admin, configuration) ?
-
-### D10 — Taxonomie des thématiques et publics
-- Liste fermée gérée par les admins (recommandé pour la qualité de la recherche/filtrage) ou saisie libre par les Intervenants (plus rapide à lancer mais moins structuré) ?
-
-### D11 — Canaux de notification au MVP
-- In-app uniquement, ou in-app + email dès le lancement ? (Email a un impact sur l'architecture — service d'envoi transactionnel — cf. Phase Architecture.)
-
-### D12 — Politique de suppression de compte (RGPD)
-- Suppression réelle des données à la demande, ou anonymisation avec conservation d'un historique minimal (utile pour la modération/litiges) ? Recommandation : anonymisation avec conservation des métadonnées de modération, à détailler en Phase Sécurité.
-
-### D13 — Visibilité de l'annuaire sans compte
-- Fiches/profils consultables publiquement sans connexion (meilleur pour l'acquisition/SEO), ou accès réservé aux comptes connectés (meilleure maîtrise des données, cohérent avec le risque de scraping en section 7) ?
+### Détail des options envisagées (archive)
 
 ## 9. Alternatives envisagées et écartées
 
@@ -148,7 +138,9 @@ Décrire précisément les rôles, les parcours, les fonctionnalités et les rè
 
 ## 10. Critères de validation de la phase
 
-- [ ] D7 à D13 tranchés.
-- [ ] Rôles, permissions et parcours jugés complets et fidèles par l'utilisateur.
-- [ ] Règles de gestion validées (statuts de compte, de fiche, journalisation admin).
-- [ ] Risques jugés complets à ce stade.
+- [x] D7 à D13 tranchés.
+- [x] Rôles, permissions et parcours jugés complets et fidèles par l'utilisateur.
+- [x] Règles de gestion validées (statuts de compte, de fiche, journalisation admin).
+- [x] Risques jugés complets à ce stade.
+
+**Phase 2 validée le 2026-08-27.** → Passage à la Phase 3 (Définition du MVP).
