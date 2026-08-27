@@ -1,6 +1,6 @@
 # Phase 8 — Organisation du dépôt
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document fixe la structure du dépôt, les conventions et le flux de travail Git avant le premier commit de code (Phase 10). Objectif : un dépôt lisible et cohérent dès le départ, exploitable directement par Claude Code.
 
@@ -94,19 +94,14 @@ Un fichier `CLAUDE.md` à la racine du dépôt sera créé au démarrage de la P
 - Les conventions de ce document (§3).
 - Un rappel explicite : **ne pas modifier le périmètre fonctionnel sans revenir amender la documentation de phase concernée** (cohérent avec la méthode, `docs/00-process.md`).
 
-## 6. Décisions à prendre pour valider cette phase
+## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D36 — Gestionnaire de paquets
-- **npm** (par défaut, aucune installation supplémentaire) vs **pnpm** (plus rapide, plus économe en espace disque, standard dans beaucoup de projets Next.js récents) ? **Recommandation : pnpm.**
-
-### D37 — Rigueur du linting/formatage
-- ESLint + Prettier avec configuration standard (recommandée, rapide à mettre en place) vs configuration renforcée dès le départ (règles strictes supplémentaires, ex. interdiction de `any`, complexité cyclomatique limitée) ?
-
-### D38 — Structure des tests
-- Tests colocalisés avec le code (`Component.test.tsx` à côté de `Component.tsx`, recommandé — plus simple à maintenir en cohérence avec le code) vs dossier `tests/` centralisé (déjà esquissé dans l'arborescence ci-dessus pour les tests e2e, qui doivent rester séparés par nature) ?
-
-### D39 — Politique de revue de code
-- Toute pull request nécessite-t-elle une revue humaine avant fusion (même pour du code produit par Claude Code), ou la CI verte suffit-elle pour les tâches jugées simples ? **Recommandation : revue humaine requise au minimum pour les zones sensibles identifiées en Phase 7 (auth, permissions, paiement futur), CI verte suffisante pour le reste au démarrage du projet (équipe réduite).**
+| # | Décision retenue |
+|---|---|
+| D36 | **pnpm** comme gestionnaire de paquets. |
+| D37 | **Configuration de lint/format renforcée** dès le départ (règles strictes supplémentaires : interdiction de `any` implicite, complexité cyclomatique limitée, imports ordonnés) — à documenter précisément dans la config ESLint au début de la Phase 10. |
+| D38 | **Dossier `tests/` centralisé** (`tests/unit/`, `tests/e2e/`), conforme à l'arborescence proposée en §2 — pas de colocalisation des tests unitaires avec le code applicatif. |
+| D39 | **Revue humaine obligatoire uniquement sur les zones sensibles** (authentification, permissions/RBAC, tout ce qui touchera un futur paiement) ; CI verte suffisante pour fusionner le reste, adapté à une équipe réduite. |
 
 ## 7. Risques identifiés (niveau organisation du dépôt)
 
@@ -123,6 +118,8 @@ Un fichier `CLAUDE.md` à la racine du dépôt sera créé au démarrage de la P
 
 ## 9. Critères de validation de la phase
 
-- [ ] D36 à D39 tranchées.
-- [ ] Arborescence jugée claire et suffisante pour démarrer la Phase 10.
-- [ ] Conventions (nommage, branches, commits, migrations) validées.
+- [x] D36 à D39 tranchées.
+- [x] Arborescence jugée claire et suffisante pour démarrer la Phase 10.
+- [x] Conventions (nommage, branches, commits, migrations) validées.
+
+**Phase 8 validée le 2026-08-27.** → Passage à la Phase 9 (Backlog).

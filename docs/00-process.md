@@ -27,8 +27,8 @@ Ce document décrit la façon dont le produit **EduConnect** est construit : par
 | 5 | Architecture technique | `05-architecture-technique.md` | ✅ Validée (2026-08-27) |
 | 6 | Modèle de données | `06-modele-donnees.md` | ✅ Validée (2026-08-27) |
 | 7 | Sécurité | `07-securite.md` | ✅ Validée (2026-08-27) |
-| 8 | Organisation du dépôt | `08-organisation-depot.md` | 🟡 En cours |
-| 9 | Backlog | `09-backlog.md` | ⏳ À venir |
+| 8 | Organisation du dépôt | `08-organisation-depot.md` | ✅ Validée (2026-08-27) |
+| 9 | Backlog | `09-backlog.md` | 🟡 En cours |
 | 10 | Développement itératif | `10-*` (un doc par itération) | ⏳ À venir |
 
 ## Règles de validation

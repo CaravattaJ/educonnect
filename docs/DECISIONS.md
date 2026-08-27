@@ -223,3 +223,27 @@ Format :
 - Phase : 7 — Sécurité
 - Décision : Sauvegardes quotidiennes de la base de données, rétention 7 jours, dès le MVP.
 - Conséquences : Configuration standard de l'hébergeur managé (Neon/Supabase), pas de développement spécifique nécessaire.
+
+## D-036 — Gestionnaire de paquets
+- Date : 2026-08-27
+- Phase : 8 — Organisation du dépôt
+- Décision : pnpm.
+- Conséquences : Configuration CI et documentation développeur basées sur pnpm dès la Phase 10.
+
+## D-037 — Rigueur du linting/formatage
+- Date : 2026-08-27
+- Phase : 8 — Organisation du dépôt
+- Décision : Configuration ESLint/Prettier renforcée dès le départ (interdiction de `any` implicite, complexité limitée, imports ordonnés).
+- Conséquences : Configuration précise à établir en début de Phase 10 ; peut ralentir légèrement les premières itérations mais évite une dette de qualité précoce.
+
+## D-038 — Structure des tests
+- Date : 2026-08-27
+- Phase : 8 — Organisation du dépôt
+- Décision : Dossier `tests/` centralisé (`tests/unit/`, `tests/e2e/`), pas de colocalisation.
+- Conséquences : Arborescence du dépôt conforme à `docs/08-organisation-depot.md` §2.
+
+## D-039 — Politique de revue de code
+- Date : 2026-08-27
+- Phase : 8 — Organisation du dépôt
+- Décision : Revue humaine obligatoire uniquement sur les zones sensibles (auth, permissions/RBAC, futur paiement) ; CI verte suffisante pour le reste.
+- Conséquences : À formaliser via les règles de protection de branche GitHub (CODEOWNERS ciblé sur les dossiers sensibles, ex. `src/lib/auth/`, `src/lib/permissions/`) en Phase 10.
