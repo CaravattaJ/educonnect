@@ -91,3 +91,27 @@ Format :
 - Phase : 2 — Spécifications fonctionnelles
 - Décision : Annuaire public consultable sans compte (données non sensibles uniquement). Seuls les comptes connectés et validés (statut "actif") peuvent créer une fiche mission ; les visiteurs sont strictement en lecture.
 - Conséquences : Nécessite une distinction claire dans l'API/backend entre données publiques et données réservées aux comptes connectés (coordonnées de contact notamment, protégées derrière la messagerie interne, cf. D-005).
+
+## D-014 — Méthode d'authentification
+- Date : 2026-08-27
+- Phase : 3 — Définition du MVP
+- Décision : Email + mot de passe, et connexion via Google (SSO/OAuth), dès le MVP.
+- Conséquences : La Phase 5 (Architecture) doit choisir une solution d'authentification supportant nativement email/mot de passe + OAuth Google (ex. Auth.js/NextAuth, Supabase Auth, Auth0, ou implémentation OAuth manuelle). Impact sécurité : gestion des secrets OAuth (Phase 7).
+
+## D-015 — Limite de fiches mission
+- Date : 2026-08-27
+- Phase : 3 — Définition du MVP
+- Décision : Aucun plafond au MVP.
+- Conséquences : Aucune contrainte technique de quota dans le modèle de données au MVP.
+
+## D-016 — Moteur de recherche
+- Date : 2026-08-27
+- Phase : 3 — Définition du MVP
+- Décision : Recherche via la base de données relationnelle (pas de moteur dédié) au MVP.
+- Conséquences : La Phase 5/6 doit néanmoins concevoir le modèle de données pour ne pas bloquer un remplacement ultérieur par un moteur dédié (ex. Meilisearch) si le volume augmente.
+
+## D-017 — Délai de validation admin
+- Date : 2026-08-27
+- Phase : 3 — Définition du MVP
+- Décision : Pas d'engagement de délai formel communiqué aux utilisateurs au MVP.
+- Conséquences : Le délai de traitement des inscriptions reste suivi en interne comme métrique de vigilance (risque de goulot d'étranglement, cf. Phase 3 §7).

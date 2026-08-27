@@ -1,6 +1,6 @@
 # Phase 3 — Définition du MVP
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document découpe les spécifications fonctionnelles (Phase 2) en un **périmètre livrable en premier** (MVP) et un **backlog d'évolutions**. Objectif : livrer vite une valeur réelle (mise en relation Intervenants ↔ Organisateurs) sans sur-construire.
 
@@ -86,21 +86,14 @@ Proposition d'indicateurs, à confirmer :
 - Taux de réponse des Intervenants aux demandes de contact.
 - Délai moyen de validation d'une inscription par les admins.
 
-## 6. Décisions à prendre pour valider cette phase
+## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D14 — Méthode d'authentification au MVP
-- **Option A (recommandée)** : email + mot de passe uniquement. Simple, pas de dépendance externe.
-- **Option B** : email + mot de passe + connexion via Google (SSO). Meilleur taux de conversion à l'inscription mais ajoute une dépendance externe et de la complexité (OAuth) dès le MVP.
-
-### D15 — Limite du nombre de fiches mission par Intervenant
-- Illimité dès le MVP, ou plafond raisonnable (ex. 20) pour limiter le spam le temps que la modération se rode ?
-
-### D16 — Moteur de recherche
-- **Option A (recommandée MVP)** : recherche via la base de données relationnelle (index texte simple). Suffisant pour le volume "région pilote", pas de brique supplémentaire à opérer.
-- **Option B** : moteur de recherche dédié (ex. Meilisearch/Elasticsearch) dès le MVP. Meilleure pertinence mais complexité d'infrastructure supplémentaire non justifiée à ce stade.
-
-### D17 — Délai/process de validation admin
-- Y a-t-il un engagement de délai (ex. "sous 48h") communiqué aux utilisateurs, ou pas d'engagement formel au MVP ?
+| # | Décision retenue |
+|---|---|
+| D14 | **Email + mot de passe + SSO Google** dès le MVP. Implique une intégration OAuth (Google) en plus de l'auth classique — impact sur la Phase 5 (Architecture) : choix d'une librairie/service d'authentification qui supporte nativement les deux. |
+| D15 | **Illimité.** Pas de plafond de fiches mission par Intervenant ; la modération a posteriori (signalement + action admin) suffit à gérer les abus. |
+| D16 | **Recherche via la base de données** (index texte simple), pas de moteur dédié au MVP. |
+| D17 | **Pas d'engagement de délai formel** communiqué aux utilisateurs pour la validation admin au MVP. Le délai de traitement reste néanmoins suivi comme métrique de vigilance interne (cf. §7 risques). |
 
 ## 7. Risques identifiés (niveau MVP)
 
@@ -119,7 +112,9 @@ Proposition d'indicateurs, à confirmer :
 
 ## 9. Critères de validation de la phase
 
-- [ ] D14 à D17 tranchés.
-- [ ] Liste "inclus / reporté" validée ou amendée par l'utilisateur.
-- [ ] Exigences non fonctionnelles jugées suffisantes pour un lancement pilote.
-- [ ] Critères de succès confirmés ou ajustés.
+- [x] D14 à D17 tranchés.
+- [x] Liste "inclus / reporté" validée ou amendée par l'utilisateur.
+- [x] Exigences non fonctionnelles jugées suffisantes pour un lancement pilote.
+- [x] Critères de succès confirmés ou ajustés.
+
+**Phase 3 validée le 2026-08-27.** → Passage à la Phase 4 (UX).
