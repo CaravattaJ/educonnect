@@ -1,43 +1,43 @@
 # Phase 1 — Cadrage produit
 
-Statut : ✅ **Validée**
+Statut : ✅ **Validée** (amendée le 2026-08-27)
+
+> **Amendement du 2026-08-27 (pivot de modèle)** : le modèle initial ("Intervenants" publiant des offres, "Organisateurs" recherchant et contactant) est remplacé par un modèle **annuaire d'activités**. Chaque **Organisateur** crée et publie ses propres **activités pédagogiques**, et doit déclarer pour chacune **au moins un Intervenant** — une fiche de référence (nom, structure, contact) gérée par l'Organisateur dans un espace dédié, **sans compte ni connexion propre**. Il n'y a donc plus que **deux rôles de compte : Organisateur et Administrateur**. Voir §2, §4, §6 (révisés) et `docs/DECISIONS.md` (D-042 à D-045).
 
 ## 1. Objectif de la phase
 
 Définir précisément ce qu'est EduConnect, pour qui, pourquoi, et où s'arrête son périmètre — avant toute spécification fonctionnelle. Ce document sert de référence commune ; il doit être stable une fois validé (les phases suivantes s'y réfèrent).
 
-## 2. Proposition de vision
+## 2. Proposition de vision *(révisée le 2026-08-27)*
 
-**EduConnect** est une plateforme de mise en relation entre :
-- des **structures qui proposent des interventions pédagogiques** (ex. associations, indépendants, entreprises culturelles/scientifiques, artistes, professionnels souhaitant intervenir en milieu scolaire ou périscolaire) — appelées ici **Intervenants**,
-- et des **structures qui recherchent une intervention** pour leur public (écoles, collèges/lycées, centres de loisirs, médiathèques, structures périscolaires, associations éducatives) — appelées ici **Organisateurs**.
+**EduConnect** est un **annuaire d'activités pédagogiques**. Des **Organisateurs** (écoles, collèges/lycées, centres de loisirs, médiathèques, structures périscolaires, associations éducatives) y publient les **activités** qu'ils organisent (ateliers, interventions, projets pédagogiques), en déclarant pour chacune **au moins un Intervenant** — la personne ou structure qui a effectivement mené l'activité (association, indépendant, entreprise culturelle/scientifique, artiste, professionnel...).
 
-La plateforme permet de publier une offre d'intervention (côté Intervenant) ou un besoin (côté Organisateur), de rechercher/filtrer, d'échanger, et de concrétiser une mise en relation (jusqu'à quel stade exactement = décision à trancher ci-dessous).
+L'Intervenant n'est **pas un utilisateur du site** : c'est une fiche de référence (nom, structure, description, contact) que l'Organisateur crée et gère dans un espace dédié ("mes intervenants"), réutilisable d'une activité à l'autre. La plateforme permet à tout visiteur de consulter l'annuaire des activités publiées, de rechercher/filtrer, et de **contacter l'Organisateur** qui a publié une activité (ex. pour en savoir plus, s'en inspirer, ou entrer en contact avec l'intervenant déclaré).
 
 > ⚠️ Le nom "EduConnect" est repris tel quel du nom du dépôt. À confirmer ou changer en phase de branding (hors périmètre technique).
 
-## 3. Problème adressé
+## 3. Problème adressé *(révisé le 2026-08-27)*
 
-Aujourd'hui, la mise en relation entre porteurs d'activités pédagogiques et établissements se fait de façon dispersée : bouche-à-oreille, réseaux personnels, appels d'offres informels, réseaux sociaux, annuaires génériques non spécialisés. Conséquences probables (à valider avec de vrais utilisateurs si possible) :
-- Les intervenants de qualité peinent à se faire connaître au-delà de leur réseau local.
-- Les organisateurs perdent du temps à chercher des intervenants adaptés (thématique, niveau, zone géographique, budget, disponibilité).
-- Pas de moyen simple de comparer, évaluer la fiabilité, ou vérifier les habilitations (ex. agrément Éducation nationale, casier judiciaire vierge — sujet sensible, cf. section sécurité/risques).
+Aujourd'hui, les activités pédagogiques menées par les établissements et structures éducatives (interventions, ateliers, projets) restent largement invisibles au-delà de leur propre structure : pas de recensement partagé, pas de moyen simple pour une autre structure de s'en inspirer ou de retrouver un intervenant qui a fait ses preuves ailleurs. Conséquences probables (à valider avec de vrais utilisateurs si possible) :
+- Les bonnes pratiques et activités réussies restent cantonnées à un réseau local, sans visibilité pour d'autres structures qui gagneraient à les reproduire.
+- Les Organisateurs qui cherchent à monter un projet similaire repartent de zéro plutôt que de s'appuyer sur ce qui a déjà été fait ailleurs.
+- Pas de moyen simple de retrouver un intervenant recommandé par une autre structure, ni de comparer les activités menées sur un territoire.
 
-## 4. Utilisateurs cibles
+## 4. Utilisateurs cibles *(révisé le 2026-08-27 — deux rôles de compte seulement)*
 
-### 4.1 Persona "Intervenant" (offre)
-Exemples : association d'éducation à l'environnement, planétarium itinérant, écrivain public, ancien sportif de haut niveau, musicien intervenant en milieu scolaire, entreprise de sensibilisation au numérique/handicap, etc.
-Besoins probables : visibilité, gestion de son catalogue d'interventions, gestion de disponibilités, réception de demandes qualifiées, réputation/avis.
-
-### 4.2 Persona "Organisateur" (demande)
+### 4.1 Persona "Organisateur" (seul rôle de compte "métier")
 Exemples : enseignant, directeur d'école, référent périscolaire, bibliothécaire, coordinateur d'association éducative.
-Besoins probables : trouver rapidement un intervenant pertinent (thème, niveau scolaire, zone, budget, dates), comparer, contacter, organiser logistiquement, garder une trace administrative.
+Besoins probables : publier les activités qu'il organise, gérer un carnet réutilisable d'intervenants (créer/éditer une fiche intervenant), donner de la visibilité à son établissement/ses projets, être contacté par d'autres structures intéressées.
+
+### 4.2 "Intervenant" — fiche de référence, pas un compte
+L'Intervenant (ex. association d'éducation à l'environnement, planétarium itinérant, écrivain public, musicien intervenant en milieu scolaire...) est **déclaré par l'Organisateur** sur chaque activité, via une fiche qu'il crée et peut réutiliser. Il n'a ni identifiant ni accès à la plateforme. Ces fiches sont modérées par un Administrateur avant de pouvoir être associées à une activité publiée (cf. D3 révisée, §6).
 
 ### 4.3 Rôle "Administrateur" — confirmé (cf. décision D3)
 La plateforme intègre dès le MVP un **espace d'administration** destiné à une équipe interne (plusieurs comptes admin), avec au minimum :
-- Validation manuelle des nouvelles structures (Intervenants et Organisateurs) avant publication de leur profil.
-- Modération des fiches "mission"/offre et des signalements.
-- Édition/correction des informations de mission et des comptes utilisateurs (droit de modifier au nom d'un utilisateur, ex. correction d'une erreur, mise en conformité).
+- Validation manuelle des nouveaux comptes Organisateur avant publication de leur profil.
+- Validation manuelle des fiches Intervenant créées par les Organisateurs, avant qu'elles ne puissent être associées à une activité publiée.
+- Modération des activités publiées et des signalements.
+- Édition/correction des informations d'activité, de fiche Intervenant et des comptes Organisateur (droit de modifier au nom d'un utilisateur, ex. correction d'une erreur, mise en conformité).
 - Gestion des comptes (suspension, réactivation, suppression).
 
 *Le détail des permissions (rôle admin unique vs. sous-rôles type "modérateur"/"super-admin") sera précisé en phase Spécifications fonctionnelles.*
@@ -48,12 +48,13 @@ La plateforme intègre dès le MVP un **espace d'administration** destiné à un
 ## 5. Périmètre proposé
 
 ### Dans le périmètre (vision produit globale, pas forcément le MVP)
-- Inscription et gestion de profil pour les deux types de structures.
-- Publication d'offres (côté Intervenant) et/ou de besoins (côté Organisateur) — cf. décision D1 ci-dessous.
+- Inscription et gestion de profil pour les Organisateurs.
+- Gestion d'un carnet d'Intervenants (fiches réutilisables) par l'Organisateur.
+- Publication d'activités par l'Organisateur, chacune déclarant au moins un Intervenant validé — cf. décision D1 révisée ci-dessous.
 - Recherche/filtrage (thématique, public visé, zone géographique, format, budget, disponibilité).
-- Mise en relation : messagerie ou système de demande de contact.
+- Mise en relation : contact de l'Organisateur qui a publié une activité.
 - Fiche structure (présentation, historique, avis/évaluations).
-- Notifications (nouvelle demande, nouveau message, etc.).
+- Notifications (nouvelle demande, etc.).
 
 ### Hors périmètre (explicitement, sauf décision contraire)
 - Paiement en ligne / facturation intégrée (les modalités financières restent gérées hors plateforme, au moins au MVP).
@@ -66,12 +67,13 @@ La plateforme intègre dès le MVP un **espace d'administration** destiné à un
 
 | # | Décision retenue |
 |---|---|
-| D1 | **Annuaire + messagerie**. Le modèle "appel à candidatures" est une évolution possible mais n'est pas exclu par le modèle de données. |
+| D1 | *(révisée le 2026-08-27)* **Annuaire d'activités.** Chaque Organisateur publie ses propres activités, chacune déclarant au moins un Intervenant (fiche sans compte). Le contact se fait vers l'Organisateur. Remplace le modèle initial "Intervenants publient des offres, Organisateurs contactent" — voir D-042. |
 | D2 | **Gratuit au lancement.** Pas de paiement en ligne au MVP. Monétisation (abonnement/commission) réévaluée plus tard. |
-| D3 | **Vérification manuelle avant publication + espace administrateur** dédié à la modération (validation des structures, gestion des signalements, édition des fiches "mission"/offre et des comptes utilisateurs). Un rôle **Administrateur** est donc confirmé dès le MVP, avec plusieurs comptes admin possibles (équipe de modération). |
+| D3 | *(révisée le 2026-08-27)* **Vérification manuelle avant publication + espace administrateur** dédié à la modération : validation des comptes Organisateur **et** des fiches Intervenant, gestion des signalements, édition des activités et des comptes. Un rôle **Administrateur** est confirmé dès le MVP, avec plusieurs comptes admin possibles (équipe de modération). |
 | D4 | **Lancement en région pilote.** La zone géographique n'est pas codée en dur : c'est un filtre de recherche standard (région/département/ville). Le ciblage "région pilote" est une décision de mise sur le marché (communication, onboarding initial), pas une contrainte technique. Publics visés : scolaire + périscolaire (écoles, centres de loisirs, médiathèques, associations éducatives). *Le nom de la région pilote reste à préciser (marketing), non bloquant techniquement.* |
-| D5 | **Messagerie interne uniquement** pour les échanges après mise en relation — pas de partage libre de coordonnées au MVP (assouplissement possible plus tard). |
+| D5 | *(révisée le 2026-08-27)* **Contact via l'Organisateur** qui a publié l'activité (email), et non plus une messagerie interne entre deux comptes — cohérent avec le retrait de la messagerie du MVP (déjà acté en D-030) et le fait que l'Intervenant n'a pas de compte à contacter directement. |
 | D6 | Nom "EduConnect" conservé à titre provisoire pour la suite du projet (non tranché explicitement, non bloquant). |
+| D7 | *(obsolète depuis le 2026-08-27)* Le cumul de rôles Intervenant/Organisateur n'a plus d'objet : il n'existe plus qu'un seul rôle de compte "métier" (Organisateur). Voir D-043. |
 
 ### Détail des options envisagées (archive)
 
@@ -139,3 +141,5 @@ Avant de valider cette phase, merci de trancher (ou de confirmer les recommandat
 - [x] Risques jugés complets à ce stade (ajouts possibles en phase 2).
 
 **Phase 1 validée le 2026-08-27.** → Passage à la Phase 2 (Spécifications fonctionnelles).
+
+**Amendement validé le 2026-08-27** (pivot annuaire d'activités, deux rôles Organisateur/Admin) — voir bandeau en tête de document et `docs/DECISIONS.md` D-042 à D-045. Répercuté dans les Phases 2, 3, 4, 6, 7, 8, 9.
