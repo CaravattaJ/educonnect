@@ -1,0 +1,68 @@
+{
+  "name": "educonnect",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@heroui/shared-utils",
+      "@prisma/client",
+      "@prisma/engines",
+      "@sentry/cli",
+      "esbuild",
+      "prisma"
+    ]
+  },
+  "dependencies": {
+    "@heroui/react": "^2.7.0",
+    "@prisma/client": "^6.2.1",
+    "@sentry/nextjs": "^8.47.0",
+    "bcryptjs": "^2.4.3",
+    "framer-motion": "^11.15.0",
+    "next": "^15.1.4",
+    "next-auth": "^5.0.0-beta.25",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^4.0.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
+    "@eslint/js": "^9.18.0",
+    "@next/eslint-plugin-next": "^15.1.4",
+    "eslint": "^9.18.0",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript-eslint": "^8.19.1",
+    "postcss": "^8.4.49",
+    "prettier": "^3.4.2",
+    "prisma": "^6.2.1",
+    "@tailwindcss/postcss": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://educonnect:educonnect@localhost:5432/educonnect"
+      AUTH_SECRET: "ci-placeholder-secret"
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: educonnect
+          POSTGRES_PASSWORD: educonnect
+          POSTGRES_DB: educonnect
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U educonnect"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Prisma generate
+        run: pnpm prisma:generate
+
+      - name: Prisma migrate (CI database)
+        run: pnpm prisma migrate deploy
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

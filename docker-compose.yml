@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: educonnect
+      POSTGRES_PASSWORD: educonnect
+      POSTGRES_DB: educonnect
+    ports:
+      - "5432:5432"
+    volumes:
+      - educonnect-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  educonnect-postgres-data:

@@ -1,0 +1,332 @@
+// Schéma dérivé de docs/06-modele-donnees.md (modèle "annuaire d'activités", pivot du 2026-08-27).
+// Toute modification de schéma doit rester cohérente avec ce document et docs/DECISIONS.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Comptes & profils
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  ORGANISATEUR
+  ADMIN
+}
+
+enum AccountStatus {
+  EN_ATTENTE
+  ACTIF
+  REJETE
+  SUSPENDU
+  ANONYMISE
+}
+
+model User {
+  id               String        @id @default(uuid())
+  email            String        @unique
+  passwordHash     String?
+  googleId         String?       @unique
+  role             UserRole
+  accountStatus    AccountStatus @default(EN_ATTENTE)
+  rejectionReason  String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  anonymizedAt     DateTime?
+
+  structure        Structure?
+  resolvedReports  Report[]      @relation("ReportResolver")
+  reports          Report[]      @relation("ReportAuthor")
+  adminActions     AdminAction[]
+  notifications    Notification[]
+}
+
+model Structure {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String
+  logoUrl      String?
+  website      String?
+  contactEmail String
+  cityId       String
+  city         City     @relation(fields: [cityId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  intervenants    Intervenant[]
+  activities      Activity[]
+  contactRequests ContactRequest[]
+}
+
+// ---------------------------------------------------------------------------
+// Intervenants (fiches sans compte, gérées par l'Organisateur)
+// ---------------------------------------------------------------------------
+
+enum IntervenantStatus {
+  EN_ATTENTE
+  VALIDEE
+  REJETEE
+  DESACTIVEE
+}
+
+model Intervenant {
+  id               String            @id @default(uuid())
+  structureId      String
+  structure        Structure         @relation(fields: [structureId], references: [id], onDelete: Cascade)
+  name             String
+  description      String?
+  contactEmail     String?
+  status           IntervenantStatus @default(EN_ATTENTE)
+  rejectionReason  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  activities ActivityIntervenant[]
+}
+
+// ---------------------------------------------------------------------------
+// Activités
+// ---------------------------------------------------------------------------
+
+enum ActivityFormat {
+  PRESENTIEL
+  DISTANCIEL
+  HYBRIDE
+}
+
+enum ActivityStatus {
+  BROUILLON
+  PUBLIEE
+  DEPUBLIEE
+}
+
+model Activity {
+  id                String         @id @default(uuid())
+  structureId       String
+  structure         Structure      @relation(fields: [structureId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  format            ActivityFormat
+  cityId            String
+  city              City           @relation(fields: [cityId], references: [id])
+  budgetIndicative  String?
+  availabilityNote  String?
+  status            ActivityStatus @default(BROUILLON)
+  publishedAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  intervenants    ActivityIntervenant[]
+  themes          ActivityTheme[]
+  audiences       ActivityAudience[]
+  contactRequests ContactRequest[]
+}
+
+model ActivityIntervenant {
+  activityId    String
+  activity      Activity    @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  intervenantId String
+  intervenant   Intervenant @relation(fields: [intervenantId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, intervenantId])
+}
+
+// ---------------------------------------------------------------------------
+// Taxonomie (D10) — tables administrables, seedées mais éditables via le back-office
+// ---------------------------------------------------------------------------
+
+model Theme {
+  id        String   @id @default(uuid())
+  label     String   @unique
+  colorHex  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities ActivityTheme[]
+}
+
+model Audience {
+  id        String   @id @default(uuid())
+  label     String   @unique
+  minAge    Int
+  maxAge    Int
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities ActivityAudience[]
+}
+
+model ActivityTheme {
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  themeId    String
+  theme      Theme    @relation(fields: [themeId], references: [id], onDelete: Restrict)
+
+  @@id([activityId, themeId])
+}
+
+model ActivityAudience {
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  audienceId String
+  audience   Audience @relation(fields: [audienceId], references: [id], onDelete: Restrict)
+
+  @@id([activityId, audienceId])
+}
+
+// ---------------------------------------------------------------------------
+// Référentiel géographique (D27) — chargement complet prévu en épic E2
+// ---------------------------------------------------------------------------
+
+model Region {
+  id   String @id @default(uuid())
+  code String @unique
+  name String
+
+  departments Department[]
+}
+
+model Department {
+  id       String @id @default(uuid())
+  code     String @unique
+  name     String
+  regionId String
+  region   Region @relation(fields: [regionId], references: [id])
+
+  cities City[]
+}
+
+model City {
+  id           String     @id @default(uuid())
+  inseeCode    String     @unique
+  postalCode   String
+  name         String
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  structures Structure[]
+  activities Activity[]
+}
+
+// ---------------------------------------------------------------------------
+// Contact (D30) — remplace la messagerie interne au MVP
+// ---------------------------------------------------------------------------
+
+enum ContactRequestStatus {
+  ENVOYE
+  ECHEC_ENVOI
+}
+
+model ContactRequest {
+  id                    String                @id @default(uuid())
+  activityId            String
+  activity              Activity              @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  recipientStructureId  String
+  recipientStructure    Structure             @relation(fields: [recipientStructureId], references: [id], onDelete: Cascade)
+  authorName            String
+  authorEmail           String
+  message               String
+  status                ContactRequestStatus  @default(ENVOYE)
+  emailSentAt           DateTime?
+  createdAt             DateTime              @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Modération
+// ---------------------------------------------------------------------------
+
+enum ReportTargetType {
+  STRUCTURE
+  ACTIVITY
+  INTERVENANT
+}
+
+enum ReportStatus {
+  OUVERT
+  TRAITE_IGNORE
+  TRAITE_ACTION
+}
+
+model Report {
+  id                String           @id @default(uuid())
+  authorUserId      String?
+  authorUser        User?            @relation("ReportAuthor", fields: [authorUserId], references: [id])
+  authorEmail       String?
+  targetType        ReportTargetType
+  targetId          String
+  reason            String
+  status            ReportStatus     @default(OUVERT)
+  resolvedByUserId  String?
+  resolvedByUser    User?            @relation("ReportResolver", fields: [resolvedByUserId], references: [id])
+  resolutionNote    String?
+  createdAt         DateTime         @default(now())
+  resolvedAt        DateTime?
+}
+
+enum AdminActionType {
+  VALIDATION_INSCRIPTION
+  REJET_INSCRIPTION
+  VALIDATION_INTERVENANT
+  REJET_INTERVENANT
+  SUSPENSION_COMPTE
+  REACTIVATION_COMPTE
+  EDITION_COMPTE
+  EDITION_ACTIVITE
+  EDITION_INTERVENANT
+  TRAITEMENT_SIGNALEMENT
+  GESTION_TAXONOMIE
+}
+
+enum AdminActionTargetType {
+  USER
+  STRUCTURE
+  ACTIVITY
+  INTERVENANT
+  REPORT
+  THEME
+  AUDIENCE
+}
+
+model AdminAction {
+  id            String                 @id @default(uuid())
+  adminUserId   String
+  adminUser     User                   @relation(fields: [adminUserId], references: [id])
+  actionType    AdminActionType
+  targetType    AdminActionTargetType
+  targetId      String
+  justification String
+  createdAt     DateTime               @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Notifications
+// ---------------------------------------------------------------------------
+
+enum NotificationType {
+  INSCRIPTION_VALIDEE
+  INSCRIPTION_REJETEE
+  INTERVENANT_VALIDE
+  INTERVENANT_REJETE
+  NOUVELLE_DEMANDE_CONTACT
+  SIGNALEMENT_TRAITE
+}
+
+model Notification {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         NotificationType
+  payload      Json
+  readAt       DateTime?
+  emailSentAt  DateTime?
+  createdAt    DateTime         @default(now())
+}
