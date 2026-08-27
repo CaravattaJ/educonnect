@@ -16,6 +16,10 @@ Ce document décrit la façon dont le produit **EduConnect** est construit : par
 - Une phase n'est considérée close que lorsque l'utilisateur donne une validation explicite (ou des corrections, auquel cas le document est amendé avant de repasser en validation).
 - Les décisions validées sont consolidées dans `docs/DECISIONS.md` (journal des décisions, format ADR léger) au fur et à mesure — ce journal est la source de vérité pour les phases suivantes et pour Claude Code lors du développement.
 
+## Amendements majeurs
+
+- **2026-08-27** : pivot de modèle — annuaire d'activités publiées par l'Organisateur (au lieu d'Intervenants publiant des offres), deux rôles de compte seulement (Organisateur, Admin), fiches Intervenant sans compte modérées par l'admin. Phases 1-9 amendées en conséquence (bandeaux en tête de chaque document). Détail : `docs/DECISIONS.md` (D-042 à D-046).
+
 ## Séquence des phases
 
 | # | Phase | Fichier | Statut |

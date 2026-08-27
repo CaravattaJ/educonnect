@@ -1,8 +1,10 @@
 # Phase 7 — Sécurité
 
-Statut : ✅ **Validée**
+Statut : ✅ **Validée** (amendée le 2026-08-27)
 
-Ce document précise les exigences de sécurité et de conformité applicables au MVP, en s'appuyant sur le modèle de données (Phase 6) et l'architecture (Phase 5). Point d'attention particulier : la plateforme met en relation des structures dont les interventions peuvent avoir lieu **auprès de mineurs** (établissements scolaires, périscolaire) — cf. risque déjà identifié en Phase 1 §7.
+> **Amendement du 2026-08-27 (pivot de modèle)** : deux rôles seulement (`ORGANISATEUR`, `ADMIN`, cf. `docs/06-modele-donnees.md`). Le RBAC (§4), le throttling du formulaire de contact (§6) et le rappel de responsabilité (§2/D33) sont mis à jour en conséquence.
+
+Ce document précise les exigences de sécurité et de conformité applicables au MVP, en s'appuyant sur le modèle de données (Phase 6) et l'architecture (Phase 5). Point d'attention particulier : la plateforme référence des activités pédagogiques dont l'exécution peut avoir lieu **auprès de mineurs** (établissements scolaires, périscolaire), assurée par un Intervenant déclaré par l'Organisateur — cf. risque déjà identifié en Phase 1 §7.
 
 ## 1. Objectif de la phase
 
@@ -10,10 +12,10 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 
 ## 2. Périmètre de responsabilité — point critique
 
-**EduConnect n'est pas et ne se substitue pas à un dispositif de vérification d'habilitation à intervenir auprès de mineurs** (ex. agrément Éducation nationale, extrait de casier judiciaire B2/B3, contrôle d'honorabilité). La vérification effectuée par la plateforme (D3) porte sur l'**existence et le sérieux déclaratif de la structure** (identité, cohérence des informations), pas sur une habilitation légale à intervenir auprès d'enfants.
+**EduConnect n'est pas et ne se substitue pas à un dispositif de vérification d'habilitation à intervenir auprès de mineurs** (ex. agrément Éducation nationale, extrait de casier judiciaire B2/B3, contrôle d'honorabilité). La vérification effectuée par la plateforme porte sur : (1) l'**existence et le sérieux déclaratif du compte Organisateur** (D3) et (2) la **cohérence déclarative de la fiche Intervenant** (D44) — dans les deux cas un contrôle de plausibilité/cohérence des informations fournies, pas une habilitation légale à intervenir auprès d'enfants, et l'Intervenant lui-même n'a ni compte ni possibilité de fournir directement un justificatif à la plateforme.
 
-- Cette limite doit être **explicite et visible** : mentions légales, CGU, et rappel contextuel au moment de la mise en relation ("Il appartient à l'Organisateur de vérifier les habilitations requises pour toute intervention auprès de mineurs").
-- Aucune donnée de mineur n'est collectée par la plateforme (ni élèves, ni listes de classes) — seules des structures/professionnels s'inscrivent.
+- Cette limite doit être **explicite et visible** : mentions légales, CGU, et rappel contextuel au moment de la publication d'une activité par l'Organisateur ("Il vous appartient de vérifier les habilitations requises pour toute intervention auprès de mineurs, y compris pour les intervenants que vous déclarez").
+- Aucune donnée de mineur n'est collectée par la plateforme (ni élèves, ni listes de classes) — seuls des comptes Organisateur s'inscrivent, et les fiches Intervenant ne contiennent que des informations professionnelles.
 - Ce point n'est pas qu'une formalité juridique : il conditionne la confiance dans le produit et doit être traité comme une exigence produit de premier plan, pas une simple ligne de CGU (cf. décision D33).
 
 ## 3. Authentification et gestion des comptes
@@ -27,9 +29,10 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 
 ## 4. Autorisation et contrôle d'accès
 
-- **RBAC strict** basé sur `User.role` (Phase 6) : chaque route/API vérifie explicitement le rôle attendu, jamais une simple vérification côté interface (le contrôle serveur fait foi).
-- **Contrôle de propriété** : un Intervenant ne peut éditer/dépublier que ses propres `MissionListing` (vérification `structureId` = structure de l'utilisateur courant sur chaque opération d'écriture), pas seulement un contrôle de rôle générique.
-- **Statut de compte vérifié à chaque action sensible** : un compte `SUSPENDU` ou `EN_ATTENTE` ne peut pas publier de fiche ni envoyer de demande de contact, même si le token de session est valide (vérification à chaque requête, pas seulement à la connexion).
+- **RBAC strict** basé sur `User.role` (`ORGANISATEUR` \| `ADMIN`, Phase 6) : chaque route/API vérifie explicitement le rôle attendu, jamais une simple vérification côté interface (le contrôle serveur fait foi).
+- **Contrôle de propriété** : un Organisateur ne peut éditer/dépublier que ses propres `Activity` et `Intervenant` (vérification `structureId` = structure de l'utilisateur courant sur chaque opération d'écriture), pas seulement un contrôle de rôle générique.
+- **Statut de compte vérifié à chaque action sensible** : un compte `SUSPENDU` ou `EN_ATTENTE` ne peut pas publier d'activité, créer de fiche Intervenant, même si le token de session est valide (vérification à chaque requête, pas seulement à la connexion).
+- **Règle de publication** : la route de passage d'une `Activity` en `PUBLIEE` vérifie côté serveur que tous les `Intervenant` associés sont au statut `VALIDEE` (Phase 6 §4.3) — jamais une confiance dans un état affiché côté client.
 - **Accès admin** : les routes d'administration sont isolées (préfixe dédié), protégées par le rôle `ADMIN`, avec una journalisation systématique via `AdminAction` (Phase 6 §3.8) — aucune action admin sensible sans entrée d'audit correspondante.
 - Pas de création de compte admin par auto-inscription : un compte `ADMIN` est créé manuellement (script/accès direct base) ou par un admin existant, jamais via le formulaire public.
 
@@ -47,9 +50,9 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 
 ## 6. Lutte contre les abus et le spam
 
-- **Formulaire de contact (`ContactRequest`, D30)** : throttling applicatif (ex. limite de N demandes par compte Organisateur par heure/jour), et par IP pour limiter la création de comptes automatisée à des fins de spam.
+- **Formulaire de contact (`ContactRequest`, D30)** : throttling applicatif **par IP** (l'émetteur n'a pas de compte, cf. pivot de modèle) — ex. limite de N demandes par IP par heure, et par activité ciblée pour éviter le harcèlement d'un Organisateur en particulier.
 - **Inscription** : vérification d'email (lien de confirmation) avant activation complète du compte (même si le compte reste `EN_ATTENTE` de validation admin en parallèle) ; cf. décision D31 pour un éventuel captcha.
-- **Signalement (`Report`)** : pas de limite de signalement légitime, mais surveillance des faux signalements en masse (traçabilité par `authorUserId`, un admin peut identifier un pattern abusif).
+- **Signalement (`Report`)** : pas de limite de signalement légitime, mais surveillance des faux signalements en masse (traçabilité par `authorUserId` ou `authorEmail`/IP pour un visiteur non connecté, D46 — un admin peut identifier un pattern abusif).
 - **Contenu des fiches/profils** : pas d'exécution de contenu utilisateur (pas de HTML riche/scripts) — texte simple avec échappement systématique à l'affichage (protection XSS de base, cf. §7).
 
 ## 7. Sécurité applicative générale
@@ -73,7 +76,7 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 |---|---|
 | D31 | **Pas de captcha au MVP.** Throttling serveur seul (limite de tentatives/requêtes par compte et par IP, §3 et §6). Captcha (ex. Cloudflare Turnstile) ajouté seulement si des abus réels sont constatés. |
 | D32 | **`ContactRequest` conservées 2 ans**, puis purgées ou anonymisées. Journal d'audit (`AdminAction`) conservé indéfiniment (données déjà anonymisées côté compte). |
-| D33 | **Rappel explicite et visible dans le produit** (pas seulement en CGU) : au moment de la publication d'une fiche par un Intervenant et à l'envoi d'une demande de contact par un Organisateur. Formulation à affiner avec un regard juridique avant lancement, mais le principe (rappel produit, pas seulement CGU) est acté — impact direct sur la Phase 4 (UX), à intégrer comme amendement léger lors du développement (Phase 10) des écrans concernés. |
+| D33 | *(révisée)* **Rappel explicite et visible dans le produit** (pas seulement en CGU) : au moment de la publication d'une activité par l'Organisateur (déclarant un ou plusieurs Intervenants) et à l'envoi d'une demande de contact par un visiteur. Formulation à affiner avec un regard juridique avant lancement, mais le principe (rappel produit, pas seulement CGU) est acté — intégré à la Phase 4 (UX révisée, §3.3 et §3.4). |
 | D34 | **Audit de sécurité applicatif complet avant le tout premier lancement en production.** Choix plus exigeant que le défaut recommandé : implique un jalon explicite "Audit sécurité" avant la mise en production, à planifier en fin de Phase 10 (cf. Phase 9 — Backlog) plutôt qu'un simple durcissement itératif post-lancement. Les presets standards (Next.js/Vercel, CSP basique) restent la base de travail dès le début du développement ; l'audit valide/complète cette base avant l'ouverture publique. |
 | D35 | **Sauvegardes quotidiennes, rétention 7 jours** dès le MVP. |
 
@@ -99,4 +102,4 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 - [x] Mesures d'authentification/autorisation jugées adaptées au MVP.
 - [x] Risques jugés complets à ce stade.
 
-**Phase 7 validée le 2026-08-27.** Note : D33 introduit un amendement léger à la Phase 4 (UX) — ajout d'un rappel visible sur les écrans de publication de fiche et d'envoi de demande de contact, à intégrer lors du développement de ces écrans (Phase 10), sans remise en cause de l'architecture d'information validée. D34 introduit un jalon "Audit de sécurité" avant mise en production, à inscrire dans le backlog (Phase 9). → Passage à la Phase 8 (Organisation du dépôt).
+**Phase 7 validée le 2026-08-27, amendée le 2026-08-27 (pivot de modèle : RBAC à deux rôles, throttling par IP, responsabilité reformulée).** D34 introduit un jalon "Audit de sécurité" avant mise en production, à inscrire dans le backlog (Phase 9). → Passage à la Phase 8 (Organisation du dépôt).

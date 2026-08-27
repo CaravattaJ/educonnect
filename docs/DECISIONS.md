@@ -259,3 +259,39 @@ Format :
 - Phase : 9 — Backlog
 - Décision : Une story est terminée si : PR fusionnée sur `main` avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D-039), documentation `docs/` mise à jour si la story amende une décision antérieure.
 - Conséquences : Critère de clôture appliqué à chaque story de la Phase 10.
+
+---
+
+## Amendement majeur du 2026-08-27 — Pivot vers un modèle "annuaire d'activités"
+
+Après validation complète des Phases 1-9, l'utilisateur a demandé un changement de modèle fondamental : ce n'est plus un annuaire d'Intervenants qui publient des offres, mais un **annuaire d'activités publiées par les Organisateurs**, chacune déclarant au moins un Intervenant (fiche sans compte, gérée et réutilisable par l'Organisateur, modérée par l'admin). En conséquence, il n'existe plus que **deux rôles de compte : Organisateur et Administrateur**. Les Phases 1 à 9 ont été amendées en conséquence (bandeaux d'amendement en tête de chaque document concerné). Les décisions ci-dessous (D-042 à D-046) documentent ce pivot ; les décisions antérieures (D-001 à D-041) restent en vigueur sauf mention contraire explicite dans leur propre entrée (ex. D-005, D-007 marquées révisées/obsolètes).
+
+## D-042 — Modèle annuaire d'activités
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit (amendement post-Phase 9)
+- Décision : L'Organisateur publie ses propres activités pédagogiques ; chaque activité doit déclarer au moins un Intervenant. Remplace le modèle initial où l'Intervenant publiait ses propres offres.
+- Conséquences : Révision de D-001 (modèle de mise en relation) et D-005 (canal de contact, désormais vers l'Organisateur). Répercuté dans tous les documents de phase (01, 02, 03, 04, 06, 07, 08, 09).
+
+## D-043 — Deux rôles de compte seulement
+- Date : 2026-08-27
+- Phase : 1 — Cadrage produit (amendement)
+- Décision : Seuls les rôles Organisateur et Administrateur existent comme comptes utilisateurs. Le rôle Intervenant (compte) est supprimé.
+- Conséquences : D-007 (cumul de rôles) devient obsolète — plus qu'un seul rôle "métier". `User.role` n'a plus que deux valeurs possibles (Phase 6).
+
+## D-044 — Fiches Intervenant modérées
+- Date : 2026-08-27
+- Phase : 1-2 (amendement)
+- Décision : Chaque fiche Intervenant créée par un Organisateur est soumise à validation admin (statuts `EN_ATTENTE`/`VALIDEE`/`REJETEE`/`DESACTIVEE`) avant de pouvoir être utilisée sur une activité publiée. Une fois validée, réutilisable par le même Organisateur sans nouvelle validation.
+- Conséquences : Double file de modération admin (comptes + fiches Intervenant), cf. Phase 3 §7 (risque de goulot d'étranglement). Nouvelle entité `Intervenant` en Phase 6.
+
+## D-045 — Règle de publication d'activité
+- Date : 2026-08-27
+- Phase : 2 (amendement)
+- Décision : Une activité ne peut passer au statut `PUBLIEE` que si l'Organisateur est `ACTIF` et que tous les Intervenants qu'elle déclare sont au statut `VALIDEE`. Contrôle applicatif serveur, pas seulement côté interface.
+- Conséquences : Règle vérifiée à chaque tentative de publication (Phase 7 §4), testée explicitement en Phase 10 (épic E5).
+
+## D-046 — Signalement ouvert aux visiteurs non connectés
+- Date : 2026-08-27
+- Phase : 6 (amendement, décision par défaut non contestée)
+- Décision : Un visiteur sans compte peut signaler une activité ou une fiche Intervenant (`Report.authorUserId` nullable, `authorEmail` requis dans ce cas).
+- Conséquences : Cohérent avec le fait que la consultation et le contact ne nécessitent pas de compte. Traçabilité par email/IP pour limiter les faux signalements (Phase 7 §6, §9).

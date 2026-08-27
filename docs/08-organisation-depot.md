@@ -1,6 +1,8 @@
 # Phase 8 — Organisation du dépôt
 
-Statut : ✅ **Validée**
+Statut : ✅ **Validée** (amendée le 2026-08-27)
+
+> **Amendement du 2026-08-27 (pivot de modèle)** : l'arborescence (§2) retire le groupe de routes `(intervenant)` — il n'y a plus de rôle Intervenant. L'espace `(organisateur)` intègre la gestion des activités et du carnet d'intervenants.
 
 Ce document fixe la structure du dépôt, les conventions et le flux de travail Git avant le premier commit de code (Phase 10). Objectif : un dépôt lisible et cohérent dès le départ, exploitable directement par Claude Code.
 
@@ -18,10 +20,9 @@ educonnect/
 │   └── DECISIONS.md
 ├── src/
 │   ├── app/                     # Next.js App Router
-│   │   ├── (public)/            # pages publiques : accueil, annuaire, fiche, connexion/inscription
-│   │   ├── (intervenant)/       # espace Intervenant (protégé par middleware de rôle)
-│   │   ├── (organisateur)/      # espace Organisateur (protégé)
-│   │   ├── (admin)/             # espace Administration (protégé)
+│   │   ├── (public)/            # pages publiques : accueil, annuaire d'activités, fiche activité, connexion/inscription
+│   │   ├── (organisateur)/      # espace Organisateur (protégé) : activités, carnet d'intervenants, profil
+│   │   ├── (admin)/             # espace Administration (protégé) : comptes, intervenants, activités, signalements
 │   │   └── api/                 # routes API (auth, webhooks éventuels)
 │   ├── components/
 │   │   ├── ui/                  # wrappers/thème HeroUI (D21), composants génériques
