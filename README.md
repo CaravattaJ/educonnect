@@ -1,12 +1,18 @@
 # EduConnect
 
-Annuaire d'activités pédagogiques : chaque Organisateur publie ses propres activités, en déclarant pour chacune au moins un Intervenant (fiche sans compte, modérée par l'admin).
+Annuaire d'offres d'activités pédagogiques : **le prestataire proposant l'intervention publie ses offres et reçoit les demandes** des structures intéressées (D-047).
 
 ## État du projet
 
-Le cadrage (Phases 1-9) est validé et amendé — voir [`docs/00-process.md`](docs/00-process.md) et le journal des décisions [`docs/DECISIONS.md`](docs/DECISIONS.md). Le développement (Phase 10) est en cours, épic par épic — voir [`docs/09-backlog.md`](docs/09-backlog.md).
+L'orientation prestataire est validée ; sa traduction documentaire est proposée à la revue. Voir [la méthode et les statuts](docs/00-process.md), [les décisions et propositions](docs/DECISIONS.md) et [le backlog](docs/09-backlog.md).
 
-- Contexte de développement pour Claude Code : [`CLAUDE.md`](CLAUDE.md)
+Le socle et une partie des comptes sont déjà codés. **Le code utilise encore l'ancien modèle Organisateur/Intervenant** : cette révision ne modifie ni l'application ni la base. L'itération R0 décrit la transition avant de poursuivre les fonctionnalités métier. Tests et fonctionnement applicatif non revérifiés dans cette révision documentaire.
+
+Le pilote reste gratuit, sans paiement ni quota ; la vocation payante est cadrée séparément dans [les hypothèses économiques](docs/10-modele-economique.md). Aucun tarif validé.
+
+Au relevé du commit `373565da4dddb91722c7691179db604af68800f9`, la branche d'intégration est `claude/educonnect-product-scoping-a3hi4u`, pas `main`. La CI cible encore `main` : à régulariser avant clôturer E0.
+
+- Contexte commun pour le développement assisté (Claude Code / Codex) : [`CLAUDE.md`](CLAUDE.md)
 
 ## Développement local
 
@@ -57,7 +63,7 @@ pnpm create-admin
 pnpm dev
 ```
 
-C'est la seule commande nécessaire à chaque session : `pnpm dev` applique automatiquement les migrations et les données de référence (thématiques, tranches d'âge) avant de démarrer le serveur — sans risque à relancer, ces étapes sont idempotentes.
+C'est la seule commande nécessaire à chaque session : `pnpm dev` applique automatiquement les migrations et les données de référence (thématiques, tranches d'âge) avant de démarrer le serveur — via les scripts du dépôt. Vérifiez toujours la base ciblée avant d'appliquer des migrations ; ne lancez pas cette commande sur une base de production.
 
 L'application est alors disponible sur http://localhost:3000.
 
@@ -67,8 +73,8 @@ L'application est alors disponible sur http://localhost:3000.
 |---|---|
 | `pnpm lint` | ESLint |
 | `pnpm typecheck` | Vérification TypeScript stricte |
-| `pnpm test` | Tests unitaires (Vitest) |
-| `pnpm test:e2e` | Tests end-to-end (Playwright) |
+| `pnpm test` | Tests Vitest ; les tests de flux E1 nécessitent PostgreSQL |
+| `pnpm test:e2e` | Commande Playwright prévue ; parcours E2E pas encore implémentés |
 | `pnpm build` | Build de production |
 | `pnpm create-admin` | Créer un compte Administrateur (CLI interactif) |
 | `pnpm prisma:studio` | Interface d'exploration de la base de données |

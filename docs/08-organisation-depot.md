@@ -1,126 +1,65 @@
 # Phase 8 — Organisation du dépôt
 
-Statut : ✅ **Validée** (amendée le 2026-08-27)
+Statut : **conventions conservées, état réel et transition documentés** (2026-08-27).
 
-> **Amendement du 2026-08-27 (pivot de modèle)** : l'arborescence (§2) retire le groupe de routes `(intervenant)` — il n'y a plus de rôle Intervenant. L'espace `(organisateur)` intègre la gestion des activités et du carnet d'intervenants.
+## 1. Objectif
 
-Ce document fixe la structure du dépôt, les conventions et le flux de travail Git avant le premier commit de code (Phase 10). Objectif : un dépôt lisible et cohérent dès le départ, exploitable directement par Claude Code.
+Travailler par petites branches et PR, sans réinitialiser le projet ni confondre cible d'organisation et état existant.
 
-## 1. Objectif de la phase
+## 2. Structure utile
 
-Définir l'arborescence du projet applicatif, les conventions de code/commit/branches, et la configuration nécessaire (CI, environnements, secrets) — pour que la Phase 10 démarre sur une base saine sans décisions structurelles à improviser en cours de route.
-
-## 2. Arborescence proposée
-
-```
-educonnect/
-├── docs/                        # documentation de cadrage (déjà en place, phases 1-9)
-│   ├── 00-process.md
-│   ├── 01-cadrage-produit.md … 09-backlog.md
-│   └── DECISIONS.md
-├── src/
-│   ├── app/                     # Next.js App Router
-│   │   ├── (public)/            # pages publiques : accueil, annuaire d'activités, fiche activité, connexion/inscription
-│   │   ├── (organisateur)/      # espace Organisateur (protégé) : activités, carnet d'intervenants, profil
-│   │   ├── (admin)/             # espace Administration (protégé) : comptes, intervenants, activités, signalements
-│   │   └── api/                 # routes API (auth, webhooks éventuels)
-│   ├── components/
-│   │   ├── ui/                  # wrappers/thème HeroUI (D21), composants génériques
-│   │   └── features/            # composants spécifiques à un domaine (fiche mission, recherche, etc.)
-│   ├── lib/
-│   │   ├── auth/                # configuration Auth.js (D14)
-│   │   ├── db/                  # client Prisma, requêtes partagées
-│   │   ├── email/                # intégration Resend, templates
-│   │   ├── validation/           # schémas Zod partagés (Phase 7 §7)
-│   │   └── permissions/          # helpers de contrôle d'accès par rôle (Phase 7 §4)
-│   ├── server/                  # logique métier serveur (services), appelée par les routes/actions
-│   └── types/                   # types partagés
-├── prisma/
-│   ├── schema.prisma
-│   ├── migrations/
-│   └── seed.ts                  # jeu de données de démarrage (taxonomie D10, référentiel géo D27)
-├── tests/
-│   ├── unit/
-│   └── e2e/                     # Playwright (Phase 5 §3.8)
-├── public/                      # assets statiques
-├── .github/
-│   └── workflows/                # CI GitHub Actions (Phase 5 §3.9)
-├── .env.example
-├── CLAUDE.md                    # instructions de contexte pour Claude Code (cf. §5)
-├── README.md
-└── package.json
-```
-
-## 3. Conventions
-
-### 3.1 Nommage
-- Fichiers de composants React : `PascalCase.tsx`.
-- Autres fichiers TypeScript : `camelCase.ts`.
-- Routes Next.js (dossiers) : `kebab-case`.
-- Tables/champs Prisma : `PascalCase` pour les modèles, `camelCase` pour les champs (convention Prisma standard, mappée automatiquement en `snake_case` côté SQL si besoin).
-
-### 3.2 Gestion des branches
-- Branche principale : `main`, toujours déployable (protégée : pas de push direct, uniquement via pull request).
-- Une branche par fonctionnalité/tâche du backlog (ex. `feat/fiche-mission-crud`, `fix/recherche-filtre-vide`), créée depuis `main`.
-- Pull request obligatoire avant fusion dans `main`, avec CI verte (lint + typecheck + tests) comme condition de fusion.
-- Pas de branche `develop` intermédiaire : flux "trunk-based" simple, cohérent avec un déploiement continu via Vercel (previews par PR, Phase 5 §3.7/§D25).
-
-### 3.3 Convention de commits
-**Recommandation : Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) — facilite la lecture de l'historique et rend possible une génération automatique de changelog plus tard si besoin.
-
-### 3.4 Migrations de base de données
-- Toute évolution du schéma passe par une migration Prisma versionnée (`prisma migrate dev` en local, `prisma migrate deploy` en CI/production) — jamais de modification manuelle du schéma en production.
-- Le fichier `seed.ts` initialise les données de référence nécessaires au fonctionnement (taxonomie D10, référentiel géographique D27, premier compte admin) — pas de données de démonstration fictives en production.
-
-### 3.5 Gestion des secrets et environnements
-- `.env.example` documente toutes les variables nécessaires (`DATABASE_URL`, secrets Auth.js, clé Google OAuth, clé API Resend, DSN Sentry, credentials stockage fichiers) sans valeurs réelles.
-- Les valeurs réelles sont configurées directement dans Vercel (variables d'environnement par environnement : production / preview), jamais commitées (cf. Phase 7 §7).
-
-## 4. CI (GitHub Actions)
-
-Pipeline minimal sur chaque pull request :
-1. Installation des dépendances.
-2. Lint (ESLint) + typecheck (`tsc --noEmit`).
-3. Tests unitaires (Vitest).
-4. Tests end-to-end critiques (Playwright) — au moins sur les parcours listés en Phase 9 (backlog), pas nécessairement l'intégralité au tout début.
-5. Build Next.js (garantit qu'aucune erreur de build ne passe en revue).
-
-Fusion dans `main` bloquée tant que le pipeline n'est pas vert (branch protection GitHub).
-
-## 5. `CLAUDE.md` — contexte pour le développement assisté
-
-Un fichier `CLAUDE.md` à la racine du dépôt sera créé au démarrage de la Phase 10, résumant :
-- Les décisions structurantes de `docs/DECISIONS.md` (liens directs).
-- Les commandes utiles (dev, test, lint, migration).
-- Les conventions de ce document (§3).
-- Un rappel explicite : **ne pas modifier le périmètre fonctionnel sans revenir amender la documentation de phase concernée** (cohérent avec la méthode, `docs/00-process.md`).
-
-## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
-
-| # | Décision retenue |
+| Chemin | Responsabilité |
 |---|---|
-| D36 | **pnpm** comme gestionnaire de paquets. |
-| D37 | **Configuration de lint/format renforcée** dès le départ (règles strictes supplémentaires : interdiction de `any` implicite, complexité cyclomatique limitée, imports ordonnés) — à documenter précisément dans la config ESLint au début de la Phase 10. |
-| D38 | **Dossier `tests/` centralisé** (`tests/unit/`, `tests/e2e/`), conforme à l'arborescence proposée en §2 — pas de colocalisation des tests unitaires avec le code applicatif. |
-| D39 | **Revue humaine obligatoire uniquement sur les zones sensibles** (authentification, permissions/RBAC, tout ce qui touchera un futur paiement) ; CI verte suffisante pour fusionner le reste, adapté à une équipe réduite. |
+| docs/ | Cadrage, décisions, backlog et note économique |
+| src/app/ | Pages publiques, espaces protégés et routes serveur |
+| src/components/ | Composants HeroUI et composants métier |
+| src/lib/ | Auth, base, email, validation, permissions et monitoring |
+| src/server/ | Actions et services métier |
+| prisma/ | Schéma, migrations versionnées et seed |
+| tests/unit/ | Tests unitaires et tests nécessitant la base identifiés explicitement |
+| tests/e2e/ | Parcours Playwright à implémenter |
+| scripts/create-admin.ts | Initialisation contrôlée du premier administrateur |
+| .github/workflows/ | CI |
+| CLAUDE.md | Instructions communes de contexte pour le développement assisté |
 
-## 7. Risques identifiés (niveau organisation du dépôt)
+Le groupe de routes existant `(organisateur)` et ses services sont à adapter en R0 après validation. La cible fonctionnelle est un espace prestataire avec activités, demandes, profil et paramètres ; pas de carnet d'intervenants dans le parcours V1.
 
-| Risque | Probabilité | Impact | Mitigation |
-|---|---|---|---|
-| Documentation de cadrage (`docs/`) qui se désynchronise du code au fil du développement | Moyenne | Moyen | Toute décision qui remet en cause un document de phase antérieur doit être répercutée immédiatement (cf. `docs/00-process.md`, déjà appliqué lors de l'amendement de la Phase 3 en Phase 6) |
-| CI trop permissive laisse passer des régressions | Faible avec le pipeline proposé | Moyen | Branch protection stricte sur `main`, pipeline bloquant (§4) |
-| Absence de convention claire dès le début entraîne une incohérence de style au fil des contributions (humaines et Claude Code) | Moyenne si non cadré | Faible | Ce document + `CLAUDE.md` + lint/format automatisés dès le premier commit |
+## 3. Branches et CI : état observé
 
-## 8. Alternatives envisagées et écartées
+Au commit `373565da4dddb91722c7691179db604af68800f9`, la seule branche relevée est `claude/educonnect-product-scoping-a3hi4u`. Le workflow CI filtre les événements push/PR sur `main`, branche absente.
 
-- **Monorepo avec plusieurs packages** (ex. `apps/web`, `packages/ui`, `packages/db`) : écarté pour le MVP — une seule application Next.js suffit (cf. Phase 5 §3.1), un monorepo ajouterait de la complexité d'outillage (workspaces, orchestration de build) sans bénéfice pour un seul déployable.
-- **Git flow complet** (branches `develop`, `release/*`, `hotfix/*`) : écarté — trop lourd pour une petite équipe avec déploiement continu ; le flux trunk-based (§3.2) est plus adapté et cohérent avec Vercel.
+Conséquences :
+- Ne pas annoncer « CI verte » faute d'exécution.
+- Créer une branche de tâche depuis la branche d'intégration réellement existante et cibler celle-ci dans la PR.
+- Choisir explicitement la branche principale durable et adapter les déclencheurs/protections avant de clôturer E0 ; ne pas créer/renommer une branche implicitement.
+- Une PR documentaire vers la branche actuelle n'établit pas une recette applicative.
+- Ne pas fusionner sans demande de l'utilisateur.
 
-## 9. Critères de validation de la phase
+La cible de travail reste simple : une branche par tâche, PR, contrôles effectifs et revue humaine sur les zones sensibles. Pas de branche develop nécessaire.
 
-- [x] D36 à D39 tranchées.
-- [x] Arborescence jugée claire et suffisante pour démarrer la Phase 10.
-- [x] Conventions (nommage, branches, commits, migrations) validées.
+## 4. Conventions et migrations
 
-**Phase 8 validée le 2026-08-27.** → Passage à la Phase 9 (Backlog).
+Conventional Commits : docs, feat, fix, refactor, test, chore. Conserver les conventions des fichiers existants plutôt que renommer hors périmètre.
+
+Migrations Prisma versionnées uniquement. Ne pas modifier les anciennes migrations déjà appliquées. La suppression de données/tables exige inventaire et validation spécifiques ; pas de reset pour simplifier R0.
+
+Le seed charge des données de référence ; ne pas injecter de fausses offres en production. L'administrateur initial passe par le script dédié, pas par un compte public ou un secret codé en dur.
+
+Secrets dans les environnements locaux/hébergeur, jamais dans Git. Aucun secret demandé dans une conversation ou une PR.
+
+## 5. Pipeline cible et tests
+
+Installation, génération Prisma avant vérification des types dépendants, lint, typecheck, migration de la base dédiée aux tests, tests, build, parcours E2E critiques. Adapter l'ordre effectif du workflow lors d'une tâche de code dédiée.
+
+D-036 : pnpm ; D-037 : lint/format stricts ; D-038 : tests centralisés ; D-039 : revue humaine auth/permissions/futur paiement.
+
+Le dossier tests/e2e contient actuellement seulement un fichier de maintien du dossier : la commande test:e2e existe, mais aucun parcours E2E n'est livré. Les tests de flux E1 utilisent une base : le libellé « unit » ne doit pas faire oublier leur dépendance PostgreSQL.
+
+## 6. Risques, alternatives et critères
+
+La désynchronisation docs/code est traitée par un état observé daté et un backlog de transition. Éviter les refactorings de nommage, changements d'hébergement ou restructurations sans rapport avec la tâche.
+
+- [ ] Branche principale et CI effectivement configurées.
+- [ ] PR et contrôles requis opérationnels.
+- [ ] Tests E2E présents et exécutés avant clôture MVP.
+- [ ] Migration R0 revue, sans perte de données implicite.
