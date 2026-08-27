@@ -247,3 +247,15 @@ Format :
 - Phase : 8 — Organisation du dépôt
 - Décision : Revue humaine obligatoire uniquement sur les zones sensibles (auth, permissions/RBAC, futur paiement) ; CI verte suffisante pour le reste.
 - Conséquences : À formaliser via les règles de protection de branche GitHub (CODEOWNERS ciblé sur les dossiers sensibles, ex. `src/lib/auth/`, `src/lib/permissions/`) en Phase 10.
+
+## D-040 — Cadence des itérations
+- Date : 2026-08-27
+- Phase : 9 — Backlog
+- Décision : Développement au fil de l'eau, épic par épic, sans cadence calendaire fixe.
+- Conséquences : Chaque épic (`docs/09-backlog.md` §3) est livré et validé avant de démarrer le suivant.
+
+## D-041 — Definition of Done
+- Date : 2026-08-27
+- Phase : 9 — Backlog
+- Décision : Une story est terminée si : PR fusionnée sur `main` avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D-039), documentation `docs/` mise à jour si la story amende une décision antérieure.
+- Conséquences : Critère de clôture appliqué à chaque story de la Phase 10.

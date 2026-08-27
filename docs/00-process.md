@@ -28,8 +28,8 @@ Ce document décrit la façon dont le produit **EduConnect** est construit : par
 | 6 | Modèle de données | `06-modele-donnees.md` | ✅ Validée (2026-08-27) |
 | 7 | Sécurité | `07-securite.md` | ✅ Validée (2026-08-27) |
 | 8 | Organisation du dépôt | `08-organisation-depot.md` | ✅ Validée (2026-08-27) |
-| 9 | Backlog | `09-backlog.md` | 🟡 En cours |
-| 10 | Développement itératif | `10-*` (un doc par itération) | ⏳ À venir |
+| 9 | Backlog | `09-backlog.md` | ✅ Validée (2026-08-27) |
+| 10 | Développement itératif | `10-*` (un doc par itération) | 🟡 En cours (E0) |
 
 ## Règles de validation
 

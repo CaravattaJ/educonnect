@@ -1,6 +1,6 @@
 # Phase 9 — Backlog
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document traduit le MVP amendé (Phase 3, avec le formulaire de contact D30) en épics et user stories priorisées, prêtes à être développées itérativement en Phase 10. Chaque story a un critère d'acceptation vérifiable.
 
@@ -103,13 +103,12 @@ Les épics E1 à E4 peuvent partiellement se chevaucher (ex. auth et référenti
 - Vérification opérationnelle du flux de validation admin en conditions réelles.
 - *Critère d'acceptation : au moins quelques structures réelles validées et visibles dans l'annuaire au lancement.*
 
-## 4. Décisions à prendre pour valider cette phase
+## 4. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D40 — Taille et cadence des itérations en Phase 10
-- Itérations informelles au fil de l'eau (recommandé pour une petite équipe/développement piloté par Claude Code : livrer épic par épic, valider, avancer), ou cadence fixe (ex. sprints de 2 semaines avec revue) ?
-
-### D41 — Definition of Done
-- Confirmer qu'une story n'est "terminée" que si : code fusionné sur `main` via PR avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D39), documentation `docs/` mise à jour si la story amende une décision antérieure.
+| # | Décision retenue |
+|---|---|
+| D40 | **Au fil de l'eau, épic par épic** — pas de cadence calendaire fixe. Chaque épic est livré et validé avant de passer au suivant. |
+| D41 | **Definition of Done confirmée** : code fusionné sur `main` via PR avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D39), documentation `docs/` mise à jour si la story amende une décision antérieure. |
 
 ## 5. Risques identifiés (niveau backlog)
 
@@ -126,6 +125,8 @@ Les épics E1 à E4 peuvent partiellement se chevaucher (ex. auth et référenti
 
 ## 7. Critères de validation de la phase
 
-- [ ] D40 et D41 tranchées.
-- [ ] Ordre des épics et stories jugé complet et réaliste pour couvrir le MVP amendé.
-- [ ] Critères d'acceptation jugés suffisamment vérifiables.
+- [x] D40 et D41 tranchées.
+- [x] Ordre des épics et stories jugé complet et réaliste pour couvrir le MVP amendé.
+- [x] Critères d'acceptation jugés suffisamment vérifiables.
+
+**Phase 9 validée le 2026-08-27.** → Passage à la Phase 10 (Développement itératif), en commençant par l'épic E0 (Fondations techniques).
