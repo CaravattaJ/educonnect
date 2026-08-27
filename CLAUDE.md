@@ -1,38 +1,48 @@
 # EduConnect — Contexte pour le développement assisté
 
-Ce projet suit une méthode de cadrage en phases documentées avant tout développement — voir `docs/00-process.md`. Les Phases 1 à 9 (cadrage produit, spécifications, MVP, UX, architecture, modèle de données, sécurité, organisation du dépôt, backlog) sont **validées**. Le développement (Phase 10) suit désormais le backlog défini dans `docs/09-backlog.md`, épic par épic.
+## Modèle produit courant
 
-## Modèle produit (important, pivot du 2026-08-27)
+EduConnect est un annuaire d'offres d'activités pédagogiques. **Le prestataire proposant l'intervention publie ses offres et reçoit les demandes associées** (D-047, confirmation explicite du 2026-08-27). Ce n'est pas un recueil d'activités passées publiées par les établissements qui les ont accueillies.
 
-EduConnect est un **annuaire d'activités pédagogiques**, pas un annuaire d'intervenants. Un **Organisateur** (seul rôle "métier", avec l'**Admin**) publie ses propres **activités**, en déclarant pour chacune au moins un **Intervenant** — une fiche de référence sans compte ni connexion, créée et réutilisable par l'Organisateur, modérée par l'admin. Une activité ne peut être publiée que si tous ses Intervenants sont validés. Le contact se fait par un formulaire simple vers l'Organisateur (pas de messagerie interne au MVP). Voir `docs/DECISIONS.md` D-042 à D-046 pour le détail.
+- Prestataire : structure fournissant l'activité ; un profil peut porter plusieurs offres.
+- Structure demandeuse : établissement scolaire, ACM, médiathèque, association, collectivité, etc. Elle consulte et contacte sans compte dans le MVP.
+- Administrateur : validation des comptes, modération et taxonomie.
+- Le besoin est considéré établi pour avancer ; aucune enquête préalable n'est un jalon bloquant (D-048).
+- La vocation commerciale est distincte du pilote gratuit conservé par D-002. Aucun tarif, quota payant ni paiement n'est validé.
 
-## Règle d'or
+## Statut documentaire et règle d'or
 
-**Ne jamais étendre ou modifier le périmètre fonctionnel sans revenir amender le document de phase concerné dans `docs/` et sans consigner la décision dans `docs/DECISIONS.md`.** Si une implémentation révèle qu'une décision antérieure doit changer, s'arrêter et amender la documentation avant de continuer le code (cf. précédent : l'amendement de la Phase 3 lors de la Phase 6, qui a retiré la messagerie interne du MVP).
+Les phases 1–9 ont été validées sur un ancien modèle. D-047 remplace ce modèle ; leur traduction révisée est soumise à revue, **pas automatiquement validée dans tous ses détails**. Lire les propositions P-001 à P-003 et les points ouverts dans [le journal](docs/DECISIONS.md).
 
-## Documents de référence à lire avant de coder une fonctionnalité
+Ne pas modifier le périmètre sans amender la phase concernée et le journal. Ne pas prendre une proposition pour une décision utilisateur. La présente révision est documentaire : elle ne change ni code, ni base, ni déploiement.
 
-- `docs/DECISIONS.md` — journal de toutes les décisions validées (D1 à D41 à ce jour), source de vérité rapide.
-- `docs/03-mvp.md` — périmètre exact du MVP (inclus / explicitement reporté), avec son amendement.
-- `docs/06-modele-donnees.md` — entités, champs, relations, diagrammes d'état à respecter dans le schéma Prisma.
-- `docs/07-securite.md` — exigences non négociables (RBAC, RGPD, anti-spam, limite de responsabilité D33 à afficher dans l'UI).
-- `docs/09-backlog.md` — épics et user stories, avec critères d'acceptation, dans l'ordre à suivre (E0 → E11).
+## À lire avant de coder
 
-## Stack (Phase 5 et 8)
+- [Méthode et statut des phases](docs/00-process.md).
+- [Décisions et propositions](docs/DECISIONS.md).
+- [MVP](docs/03-mvp.md), [spécifications](docs/02-specifications-fonctionnelles.md), [UX](docs/04-ux.md).
+- [Modèle cible et transition depuis le code existant](docs/06-modele-donnees.md).
+- [Sécurité](docs/07-securite.md).
+- [Backlog et avancement observé](docs/09-backlog.md).
+- [Modèle économique à arbitrer](docs/10-modele-economique.md).
 
-- TypeScript, Next.js (App Router), Tailwind CSS, HeroUI (thème personnalisé à définir en E0).
-- PostgreSQL + Prisma.
-- Auth.js (email/mot de passe + Google OAuth).
-- Resend (email transactionnel), Sentry (monitoring), stockage S3-compatible (logos).
-- pnpm, ESLint/Prettier renforcés, tests dans `tests/unit/` et `tests/e2e/` (Playwright), CI GitHub Actions.
+## Stack conservée
+
+TypeScript, Next.js App Router, Tailwind CSS, HeroUI ; PostgreSQL/Prisma ; Auth.js email/mot de passe + Google OAuth ; Resend, Sentry, stockage S3-compatible prévu pour les logos. pnpm, ESLint/Prettier, Vitest et cible Playwright. Pas de remise à zéro technique.
+
+## État réel et transition
+
+Référence inspectée : commit `373565da4dddb91722c7691179db604af68800f9`.
+
+Le socle local et une partie du parcours de comptes existent : inscription, vérification email, validation/rejet admin, paramètres et tests. L'annuaire, la publication d'offres et le contact ne sont pas encore livrés. La présence de code ne vaut ni validation d'épic, ni preuve de sécurité, ni tests réussis.
+
+Le code et Prisma utilisent encore `ORGANISATEUR`, `Intervenant` et `ActivityIntervenant`. La cible proposée est `PRESTATAIRE`/`ADMIN`, sans carnet obligatoire. **Ne pas renommer en masse ni supprimer des tables** : suivre l'itération R0, inventorier les données et faire valider la migration.
 
 ## Conventions
 
-- Branches : une branche par tâche depuis `main`, PR obligatoire, CI verte requise pour fusionner.
-- Commits : Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`).
-- Definition of Done (D41) : PR fusionnée avec CI verte + tests du critère d'acceptation + revue humaine si zone sensible (auth, permissions, futur paiement) + doc à jour si amendement.
-- Migrations Prisma versionnées uniquement — jamais de modification manuelle du schéma en base.
-
-## État actuel
-
-Aucun code applicatif n'existe encore. Prochaine étape : épic **E0 — Fondations techniques** (`docs/09-backlog.md` §3), à démarrer sur confirmation explicite de l'utilisateur.
+- Une branche par tâche, PR obligatoire ; ne pas fusionner sans demande de l'utilisateur.
+- Au relevé, la seule branche est `claude/educonnect-product-scoping-a3hi4u`. `main` est une cible prévue, pas une branche existante. Créer les branches de travail depuis la branche réelle ; ne pas créer/renommer `main` implicitement.
+- La CI actuelle ne cible que `main` : une PR vers la branche actuelle ne prouve pas une CI verte. Voir le backlog.
+- Conventional Commits ; migrations Prisma versionnées ; aucun secret dans Git.
+- D-041 : tests des critères d'acceptation, CI verte sur la branche d'intégration, revue humaine des zones sensibles (auth, permissions, paiement futur), documentation à jour.
+- Commandes locales et limites : [README](README.md).

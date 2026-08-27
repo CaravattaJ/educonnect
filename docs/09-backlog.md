@@ -1,145 +1,137 @@
-# Phase 9 — Backlog
+# Phase 9 — Backlog et avancement
 
-Statut : ✅ **Validée** (amendée le 2026-08-27 — épics E1, E3, E4 réécrits, E5-E6 ajustés)
+Statut : **ordre révisé proposé**, D-047 validée ; aucune recette applicative effectuée dans cette révision documentaire (2026-08-27).
 
-> **Amendement du 2026-08-27 (pivot de modèle)** : les épics liés aux comptes (E1), profils (E3) et fiches (E4) sont réécrits pour le modèle annuaire d'activités (Organisateur/Admin uniquement, carnet d'Intervenants, règle de publication). Un nouvel épic **E4bis — Intervenants** est inséré. Voir `docs/DECISIONS.md` D-042 à D-046.
+## 1. Objectif
 
-Ce document traduit le MVP amendé (Phase 3, pivot annuaire d'activités) en épics et user stories priorisées, prêtes à être développées itérativement en Phase 10. Chaque story a un critère d'acceptation vérifiable.
+Adapter le travail existant puis livrer le parcours prestataire → activité → demande. Ne pas repartir de zéro et ne pas déclarer terminé un épic sur la seule présence de fichiers.
 
-## 1. Objectif de la phase
+## 2. État observé au commit 373565da4dddb91722c7691179db604af68800f9
 
-Découper le MVP en un ordre de développement réaliste (fondations avant fonctionnalités, sécurité intégrée en continu, pas repoussée à la fin sauf l'audit final acté en D34), pour que la Phase 10 avance itération par itération sans redécouvrir le périmètre à chaque fois.
+| Bloc | Observation | Ce qui reste à démontrer |
+|---|---|---|
+| Socle E0 | Next.js, HeroUI, Prisma, migration, seed, configurations CI/tests présents | CI sur branche réelle, preview et recette |
+| Comptes E1 | Inscription, vérification email, validation/rejet admin, paramètres et tests présents | Parcours complet, contrôles de sécurité, OAuth métier et adaptation prestataire |
+| Géographie E2 | Modèles et quelques villes de seed présents | Référentiel complet et administration taxonomie |
+| Profil E3 | Champs créés à l'inscription | Édition complète et upload sécurisé |
+| Activités/annuaire/contact | Entités Prisma présentes | Services, écrans et tests du parcours E5/E6/E7 |
+| E2E | Dépendance et commande présentes ; dossier sans tests | Parcours Playwright à écrire et exécuter |
 
-## 2. Ordre des épics
+Lecture statique uniquement : aucun résultat de test, déploiement ni audit certifié ici. La CI ne cible que main, absente au relevé.
 
-```
-E0 Fondations techniques
-E1 Comptes & authentification (Organisateur)
-E2 Référentiel & taxonomie (données de base)
-E3 Profil structure (Organisateur)
-E4 Intervenants (carnet géré par l'Organisateur)
-E5 Activités
-E6 Annuaire & recherche publique
-E7 Formulaire de contact
-E8 Notifications
-E9 Administration & modération
-E10 Conformité (RGPD, mentions légales)
-E11 Audit de sécurité & durcissement pré-lancement (D34)
-E12 Amorçage du lancement pilote
-```
+## 3. Ordre proposé
 
-Les épics E1 à E5 peuvent partiellement se chevaucher (ex. auth et référentiel en parallèle), mais E11 et E12 ferment nécessairement la marche (rien ne se lance publiquement avant l'audit sécurité, D34). E4 (Intervenants) précède nécessairement E5 (Activités), puisqu'une activité requiert au moins un Intervenant.
+R0 (réalignement) → clôture E0/E1 → E2 → E3 → E5 → E6 → E7 → E8 → clôture E9/E10 → E11 → E12.
 
-## 3. Détail des épics et user stories
+**E4 — carnet d'intervenants est retiré du parcours proposé.** Les numéros suivants restent stables pour préserver les références historiques. Les actions admin indispensables sont livrées avec l'épic concerné, pas toutes repoussées à E9. Les protections sécurité s'appliquent en continu.
 
-### E0 — Fondations techniques
-- Initialiser le projet Next.js/TypeScript avec la structure de dépôt validée (Phase 8).
-- Configurer ESLint/Prettier renforcés (D37), CI GitHub Actions (lint/typecheck/tests/build).
-- Configurer Prisma + connexion PostgreSQL (environnement de développement + preview Vercel).
-- Intégrer HeroUI + définir la charte graphique minimale (palette, typographie, rayons — D21).
-- Intégrer Sentry (D24).
-- *Critère d'acceptation : un déploiement preview Vercel accessible affichant une page d'accueil minimale stylée, CI verte.*
+### R0 — Réalignement prestataire
 
-### E1 — Comptes & authentification (Organisateur)
-- Inscription Organisateur (email + mot de passe), avec vérification d'email.
-- Connexion via Google OAuth (D14).
-- Gestion des statuts de compte (`EN_ATTENTE`, `ACTIF`, `REJETE`, `SUSPENDU`) et des permissions associées (Phase 7 §4).
-- Écran "Compte en attente de validation" (Phase 4 §3.1).
-- Paramètres du compte : changement de mot de passe, suppression de compte (anonymisation, D12).
-- Création manuelle d'un premier compte `ADMIN` (script/accès direct base, pas d'auto-inscription).
-- *Critère d'acceptation : un Organisateur peut s'inscrire, être bloqué en attente, et un admin peut le faire passer `ACTIF` ; la connexion Google fonctionne.*
+- Faire relire P-001 ; inventorier code, données et environnements.
+- Valider le mapping des comptes/propriétaires ; aucun organisateur converti automatiquement en fournisseur de ses anciennes activités.
+- Adapter rôle, routes, libellés, emails, permissions, seed et tests.
+- Retirer la dépendance fonctionnelle au carnet ; ne pas supprimer de tables/données sans migration approuvée.
+- Revoir les sessions existantes et le plan de retour.
+- Acceptation : un compte prestataire garde son identité et ses données légitimes ; un compte non éligible ne devient pas prestataire ; l'isolation et les refus d'accès passent les tests ; revue humaine auth/RBAC.
 
-### E2 — Référentiel & taxonomie
-- Chargement du référentiel géographique (`Region`/`Department`/`City`, D27) via script de seed depuis une source officielle.
-- CRUD Thèmes/Publics (`Theme`/`Audience`, D10) côté admin.
-- *Critère d'acceptation : le référentiel géographique est interrogeable en base ; un admin peut créer/désactiver un thème.*
+### E0 — Clôture des fondations
 
-### E3 — Profil structure (Organisateur)
-- Création/édition du profil `Structure` : nom, description, logo, site web, email de contact, ville (référentiel E2).
-- Upload de logo sécurisé (Phase 7 §7 : type MIME, taille, renommage).
-- *Critère d'acceptation : un Organisateur actif peut compléter et enregistrer son profil, avec logo.*
+- Réconcilier branche principale réelle, déclenchement CI et protections.
+- Générer Prisma avant les contrôles dépendants ; lint/typecheck/tests/build effectifs.
+- Vérifier le thème HeroUI et la configuration des services.
+- Préparer une preview isolée si les accès et le déploiement sont autorisés.
+- Acceptation : CI réellement verte, preview de référence et limites documentées. Aucun déploiement automatique autorisé par cette seule note.
 
-### E4 — Intervenants (carnet géré par l'Organisateur)
-- CRUD `Intervenant` côté Organisateur : nom, structure, description, contact interne.
-- Statuts (`EN_ATTENTE`, `VALIDEE`, `REJETEE`, `DESACTIVEE`) et notification à l'Organisateur lors de la validation/rejet.
-- Écran "Mes intervenants" (Phase 4 §3.2).
-- *Critère d'acceptation : un Organisateur actif crée une fiche Intervenant, elle apparaît `EN_ATTENTE` ; un admin peut la valider, l'Organisateur en est notifié.*
+### E1 — Clôture des comptes prestataires
 
-### E5 — Activités
-- CRUD `Activity` côté Organisateur (brouillon/publication/dépublication), avec sélection d'un ou plusieurs `Intervenant` du carnet (E4).
-- Sélection thèmes/publics (E2), format, ville, budget indicatif, disponibilité (texte libre).
-- Contrôle serveur de la règle de publication (D45) : passage en `PUBLIEE` refusé si un Intervenant associé n'est pas `VALIDEE`.
-- Écran "Mes activités" avec statuts visibles (Phase 4 §3.3).
-- Rappel produit sur la limite de vérification (D33) affiché à la publication.
-- *Critère d'acceptation : un Organisateur actif crée une activité en brouillon avec un Intervenant non encore validé → la publication est bloquée avec un message explicite ; une fois l'Intervenant validé, la publication réussit ; le rappel D33 est visible.*
+- Inscription, email vérifié, validation admin, rejet/correction/resoumission.
+- Parcours Google : création/liaison locale sûre, rôle/profil et email vérifié.
+- Paramètres, changement/réinitialisation de mot de passe, suppression et révocation.
+- Anti-bruteforce ; états en attente, actif, rejeté, suspendu, anonymisé testés.
+- Acceptation : parcours email et Google de bout en bout ; aucun accès métier pour compte suspendu ; correction de dossier sans création d'offres en attente.
 
-### E6 — Annuaire & recherche publique
-- Page annuaire publique (sans compte requis, D13) listant les activités publiées.
-- Recherche texte + filtres (thème, public, ville/zone, format) via la base de données (D16).
-- Page détail activité, affichant le ou les Intervenants déclarés (sans coordonnées) et un résumé de l'Organisateur.
-- *Critère d'acceptation : un visiteur non connecté peut rechercher et filtrer, et consulter une activité sans coordonnées de contact exposées directement (cf. D5/D30).*
+### E2 — Référentiel et taxonomie
 
-### E7 — Formulaire de contact
-- Formulaire de contact sur une fiche activité (E6), création d'un `ContactRequest` (D30), envoi email à l'Organisateur (destinataire) via Resend.
-- Throttling anti-spam par IP (D31, §6 révisé).
-- Rappel produit D33 affiché avant envoi.
-- *Critère d'acceptation : un visiteur (sans compte) envoie un message depuis une activité, l'Organisateur reçoit un email ; les envois excessifs depuis une même IP sont bloqués par le throttling.*
+- Charger le référentiel national officiel ; garder le seed de démonstration distinct.
+- CRUD admin thèmes/publics et désactivation contrôlée.
+- Arbitrer P-002 avant de coder couverture et recherche par zone.
+- Acceptation : données interrogeables, valeurs inactives non sélectionnables, tests de relations.
+
+### E3 — Profil prestataire
+
+- Édition des informations de structure, ville du siège, contact privé, site, logo.
+- Upload sécurisé ; profil public limité aux champs prévus.
+- Acceptation : un prestataire modifie uniquement son profil ; un visiteur ne récupère pas les coordonnées privées.
+
+### E5 — Offres d'activités
+
+- Création, brouillon, édition, publication et dépublication ; thèmes/publics, format, localisation et conditions.
+- Prendre en compte la décision de géographie si P-002 validée.
+- Publication sans fiche Intervenant ; compte actif, email vérifié et champs requis.
+- Modération admin avec justification ; rappel D-033.
+- Acceptation : publication possible sans carnet ; impossible depuis un compte en attente ; accès croisé refusé ; suspension rend l'offre invisible.
+
+### E6 — Annuaire public
+
+- Recherche texte, pagination, filtres thème/public/zone/format et détail.
+- Présentation du prestataire responsable ; pas de fausse promesse de proximité ou de disponibilité.
+- Acceptation : mêmes règles sur liste/détail/contact ; offre retirée inaccessible par URL directe ; données privées absentes.
+
+### E7 — Demande directe au prestataire
+
+- Formulaire nom/email/message ; aides à qualifier la demande.
+- Destinataire calculé côté serveur, ContactRequest persistée, email et liste privée.
+- Définir l'état initial d'envoi et la reprise avant implémentation ; pas de succès prématuré.
+- Throttling et prévention des doublons ; rappel D-033.
+- Acceptation : demande reçue par le bon prestataire ; falsification du destinataire sans effet ; échec d'email visible ; spam limité ; aucune conversation créée.
 
 ### E8 — Notifications
-- Centre de notifications in-app (validation/rejet d'inscription, validation/rejet de fiche Intervenant, nouvelle demande de contact reçue).
-- Emails transactionnels correspondants (D11).
-- *Critère d'acceptation : un événement (ex. réception d'un `ContactRequest`, validation d'un `Intervenant`) génère une notification in-app et un email.*
 
-### E9 — Administration & modération
-- Back-office : liste des inscriptions Organisateur en attente, dossier, validation/rejet avec motif.
-- Back-office : liste des fiches Intervenant en attente, dossier, validation/rejet avec motif.
-- Gestion des comptes (recherche, suspension/réactivation, édition avec journalisation `AdminAction`).
-- Gestion des signalements (`Report`, y compris émis par un visiteur non connecté, D46) : liste, traitement (ignorer/dépublier/suspendre), justification obligatoire.
-- *Critère d'acceptation : toute action admin sensible crée une entrée `AdminAction` avec justification ; une fiche Intervenant et un signalement peuvent chacun être traités de bout en bout.*
+- Centre in-app et emails pour événements actifs.
+- Éviter le double email de contact si E7 et E8 déclenchent le même événement.
+- Acceptation : notification pour le bon compte, lecture privée, pas d'événement hérité de validation d'intervenant.
 
-### E10 — Conformité
-- Pages mentions légales / politique de confidentialité.
-- Consentement explicite à l'inscription (Phase 7 §5).
-- Vérification du job de purge des `ContactRequest` > 2 ans (D32).
-- *Critère d'acceptation : le consentement est requis et tracé à l'inscription ; les pages légales sont publiées et à jour.*
+### E9 — Clôture administration/modération
 
-### E11 — Audit de sécurité & durcissement pré-lancement (D34)
-- Revue des en-têtes de sécurité HTTP, CSP.
-- Vérification région d'hébergement UE (Phase 7 §5).
-- Vérification RBAC/contrôle de propriété sur toutes les routes sensibles, y compris la règle de publication (Phase 7 §4).
-- Test de charge léger sur la recherche (Phase 3 §4).
-- *Critère d'acceptation : rapport d'audit produit, actions correctives appliquées, avant toute ouverture publique.*
+- Validation des comptes déjà nécessaire en E1.
+- Comptes, activités, signalements visiteurs, taxonomie ; audit justifié.
+- Pas de seconde file de fiches Intervenant.
+- Acceptation : chaque action sensible est autorisée et tracée ; traitement d'un signalement de bout en bout.
 
-### E12 — Amorçage du lancement pilote
-- Création manuelle des premiers comptes Organisateur (et de leurs activités/intervenants) sur la région pilote (hors périmètre technique, action produit/business).
-- Vérification opérationnelle du flux de double validation (comptes + fiches Intervenant) en conditions réelles.
-- *Critère d'acceptation : au moins quelques activités réelles publiées et visibles dans l'annuaire au lancement.*
+### E10 — Données et informations légales
 
-## 4. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
+- Revue des traitements, informations, bases légales et procédures de droits.
+- Arbitrer les durées par catégorie, notamment l'ancien audit illimité D-032.
+- Implémenter puis tester suppression/purge selon politique revue ; couvrir champs libres, fichiers et notifications.
+- Acceptation : textes adaptés aux flux réels et procédures vérifiées ; pas de simple case « conforme ».
 
-| # | Décision retenue |
-|---|---|
-| D40 | **Au fil de l'eau, épic par épic** — pas de cadence calendaire fixe. Chaque épic est livré et validé avant de passer au suivant. |
-| D41 | **Definition of Done confirmée** : code fusionné sur `main` via PR avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D39), documentation `docs/` mise à jour si la story amende une décision antérieure. |
+### E11 — Audit avant production
 
-## 5. Risques identifiés (niveau backlog)
+- Auth/RBAC/propriété, règles de visibilité, anti-abus, uploads et en-têtes.
+- Dépendances, secrets, régions/contrats des services, sauvegarde et restauration.
+- Tests E2E critiques et charge légère de recherche.
+- Acceptation : rapport, corrections bloquantes appliquées, autorisation explicite d'ouverture.
 
-| Risque | Probabilité | Impact | Mitigation |
-|---|---|---|---|
-| E11 (audit sécurité) découvre des problèmes structurants tardivement | Moyenne | Élevé | Les bonnes pratiques de Phase 7 sont appliquées en continu dès E0-E1, pas seulement à l'audit final — E11 vérifie/complète, ne découvre pas from scratch |
-| Sous-estimation du référentiel géographique (E2) qui bloque plusieurs épics dépendants (E3, E4, E5, E6) | Moyenne | Moyen | Traiter E2 tôt, en parallèle de E1, avant de démarrer E3 |
-| Dépendance E4 → E5 (un Intervenant validé requis pour publier) mal comprise en développement, tentative de publier E5 avant E4 stable | Faible avec cet ordre documenté | Moyen | Suivre l'ordre §2 ; les tests d'acceptation de E5 dépendent explicitement d'un Intervenant `VALIDEE` créé par E4 |
+### E12 — Amorçage pilote
 
-## 6. Alternatives envisagées et écartées
+- Choisir territoire et premières catégories.
+- Inviter des prestataires volontaires à compléter leurs offres ; publication avec leur accord, pas de comptes fictifs ni de réutilisation automatique d'un ancien carnet.
+- Vérifier des demandes réelles de bout en bout.
+- Acceptation : catalogue initial réel, prestataires capables de répondre, suivi opérationnel en place.
+- Pas d'enquête préalable sur le besoin ; distinguer recette logicielle et étude de marché.
 
-- **Développer l'intégralité du modèle de données avant toute UI** : écarté — préférence pour un développement vertical par épic qui produit de la valeur visible/testable à chaque étape plutôt qu'un gros big-bang.
-- **Repousser la sécurité entièrement à E11** : écarté — contredit Phase 7 ; E11 est un audit de clôture, pas le seul moment où la sécurité est traitée.
-- **Fusionner E4 (Intervenants) et E5 (Activités) en un seul épic** : écarté — la dépendance (un Intervenant doit être validé avant qu'une activité ne puisse le référencer et être publiée) est plus claire et testable si les deux épics sont livrés et validés séparément, dans l'ordre.
+## 4. Après le pilote : lot commercial distinct
 
-## 7. Critères de validation de la phase
+[Note économique](10-modele-economique.md), P-003 : définir payeur, valeur payante, tarifs et calendrier avant tout lot abonnement. Aucun développement Stripe, quota ou encaissement d'interventions dans les épics ci-dessus.
 
-- [x] D40 et D41 tranchées.
-- [x] Ordre des épics et stories jugé complet et réaliste pour couvrir le MVP pivoté (annuaire d'activités, carnet d'intervenants).
-- [x] Critères d'acceptation jugés suffisamment vérifiables.
+## 5. Définition de terminé
 
-**Phase 9 validée le 2026-08-27, amendée le 2026-08-27 (pivot de modèle).** → Passage à la Phase 10 (Développement itératif), en commençant par l'épic E0 (Fondations techniques).
+D-040/D-041 maintenues : épics validés au fil de l'eau ; PR, CI verte sur la branche d'intégration réelle, tests des critères d'acceptation, revue humaine si zone sensible, documentation à jour. Fusion uniquement sur demande utilisateur. Un amendement de docs ne clôture pas un épic.
+
+## 6. Risques et alternatives
+
+Priorité au parcours vertical complet, pas à l'ajout d'un nouveau framework ou de fonctions commerciales non décidées. R0 évite un renommage trompeur ; E2 évite une recherche géographique incorrecte ; E11 garde le verrou d'ouverture publique.
+
+- [ ] P-001 relue avant R0.
+- [ ] P-002 tranchée avant géographie des offres.
+- [ ] Chaque épic justifié par résultats de tests et recette, pas par coche documentaire.

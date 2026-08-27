@@ -1,105 +1,86 @@
-# Phase 7 — Sécurité
+# Phase 7 — Sécurité et préparation à la conformité
 
-Statut : ✅ **Validée** (amendée le 2026-08-27)
+Statut : **exigences mises en cohérence avec D-047 ; revue d'implémentation et juridique avant production toujours requise** (2026-08-27). Ce document ne constitue ni un audit réalisé ni un avis juridique.
 
-> **Amendement du 2026-08-27 (pivot de modèle)** : deux rôles seulement (`ORGANISATEUR`, `ADMIN`, cf. `docs/06-modele-donnees.md`). Le RBAC (§4), le throttling du formulaire de contact (§6) et le rappel de responsabilité (§2/D33) sont mis à jour en conséquence.
+## 1. Objectif et responsabilité
 
-Ce document précise les exigences de sécurité et de conformité applicables au MVP, en s'appuyant sur le modèle de données (Phase 6) et l'architecture (Phase 5). Point d'attention particulier : la plateforme référence des activités pédagogiques dont l'exécution peut avoir lieu **auprès de mineurs** (établissements scolaires, périscolaire), assurée par un Intervenant déclaré par l'Organisateur — cf. risque déjà identifié en Phase 1 §7.
+Protéger comptes, offres et demandes professionnelles ; ne pas laisser croire que la validation d'un prestataire garantit ses habilitations à intervenir auprès de mineurs.
 
-## 1. Objectif de la phase
+Le contrôle administratif porte sur les informations déclarées par le prestataire. Aucun compte ou fiche individuelle d'intervenant n'est nécessaire au parcours proposé. Conserver le rappel D-033 sur la publication et le contact, avec formulation relue avant lancement.
 
-Fixer les mesures de sécurité et de conformité non négociables avant le développement (Phase 10), et documenter clairement les limites de responsabilité de la plateforme (notamment sur la vérification des intervenants), pour éviter toute ambiguïté juridique et produit.
+Ne pas demander de listes d'élèves, données nominatives d'enfants ou documents sensibles dans les descriptions/demandes. Définir le traitement d'un contenu de cette nature transmis malgré les consignes.
 
-## 2. Périmètre de responsabilité — point critique
+## 2. Authentification
 
-**EduConnect n'est pas et ne se substitue pas à un dispositif de vérification d'habilitation à intervenir auprès de mineurs** (ex. agrément Éducation nationale, extrait de casier judiciaire B2/B3, contrôle d'honorabilité). La vérification effectuée par la plateforme porte sur : (1) l'**existence et le sérieux déclaratif du compte Organisateur** (D3) et (2) la **cohérence déclarative de la fiche Intervenant** (D44) — dans les deux cas un contrôle de plausibilité/cohérence des informations fournies, pas une habilitation légale à intervenir auprès d'enfants, et l'Intervenant lui-même n'a ni compte ni possibilité de fournir directement un justificatif à la plateforme.
+- Hachage robuste des mots de passe ; préférence historique argon2id, bcrypt admis par le cadrage et déjà utilisé dans le code.
+- Minimum de 12 caractères prévu ; contrôle des entrées et protection anti-bruteforce serveur.
+- Vérification d'email distincte de la validation administrative.
+- Google OAuth : tester email vérifié, création/liaison au compte local, rôle et profil ; aucune association non maîtrisée.
+- Cookies sécurisés, expiration, révocation effective après suspension/suppression ; ne pas se fier à un rôle ancien stocké dans un JWT.
+- Changement/réinitialisation de mot de passe : contrôle d'identité, jeton expirant à usage unique, pas de jeton en clair dans les logs.
+- Création admin uniquement par procédure autorisée, jamais auto-inscription publique. Évaluer une protection renforcée de ces comptes avant production.
 
-- Cette limite doit être **explicite et visible** : mentions légales, CGU, et rappel contextuel au moment de la publication d'une activité par l'Organisateur ("Il vous appartient de vérifier les habilitations requises pour toute intervention auprès de mineurs, y compris pour les intervenants que vous déclarez").
-- Aucune donnée de mineur n'est collectée par la plateforme (ni élèves, ni listes de classes) — seuls des comptes Organisateur s'inscrivent, et les fiches Intervenant ne contiennent que des informations professionnelles.
-- Ce point n'est pas qu'une formalité juridique : il conditionne la confiance dans le produit et doit être traité comme une exigence produit de premier plan, pas une simple ligne de CGU (cf. décision D33).
+## 3. Autorisation et visibilité (P-001)
 
-## 3. Authentification et gestion des comptes
+Rôles cibles PRESTATAIRE et ADMIN ; le code actuel ORGANISATEUR nécessite R0.
 
-- Mots de passe : hachage **argon2id** (ou bcrypt à défaut, si la librairie d'auth choisie ne supporte qu'argon2/bcrypt — cf. Phase 5, Auth.js), jamais stocké ni loggé en clair.
-- Politique de mot de passe : longueur minimale raisonnable (12 caractères) plutôt que des règles de complexité artificielles (recommandation NIST actuelle), vérification contre une liste de mots de passe compromis courants si la librairie le permet.
-- Protection anti-bruteforce sur la connexion : limitation du nombre de tentatives par compte/IP (ex. verrouillage temporaire progressif), cf. décision D31 (captcha).
-- OAuth Google (D14) : aucune donnée de mot de passe stockée pour ces comptes ; validation de l'email retourné par Google avant association à un compte existant (éviter la prise de contrôle de compte via un email non vérifié).
-- Sessions : cookies de session sécurisés (`HttpOnly`, `Secure`, `SameSite=Lax` ou `Strict`), expiration raisonnable, révocation possible (déconnexion globale) en cas de suspicion.
-- Changement de mot de passe / réinitialisation : lien à usage unique, expirant rapidement, envoyé uniquement à l'email vérifié du compte.
+- Chaque action serveur vérifie identité, rôle, statut et propriété.
+- Compte en attente/rejeté : correction de dossier seulement ; pas de création/publication d'offres.
+- Compte actif et email vérifié : gestion de ses offres et de ses demandes privées.
+- Compte suspendu/anonymisé : accès métier refusé ; offres non publiques et non contactables.
+- Le statut doit être revérifié à chaque requête sensible même si le token reste valide.
+- Publication sans fiche Intervenant, sous conditions de complétude de l'activité.
+- Même filtre de visibilité sur annuaire, détail par identifiant et contact. Masquer un bouton ne protège pas une route.
+- Destinataire du contact déterminé depuis le propriétaire de l'activité côté serveur.
+- Admin : accès limité au besoin de modération/support et actions sensibles justifiées et journalisées.
+- Les réponses publiques ne contiennent ni contactEmail, ni email de compte, ni données privées de demandes.
 
-## 4. Autorisation et contrôle d'accès
+## 4. Anti-abus et transmission
 
-- **RBAC strict** basé sur `User.role` (`ORGANISATEUR` \| `ADMIN`, Phase 6) : chaque route/API vérifie explicitement le rôle attendu, jamais une simple vérification côté interface (le contrôle serveur fait foi).
-- **Contrôle de propriété** : un Organisateur ne peut éditer/dépublier que ses propres `Activity` et `Intervenant` (vérification `structureId` = structure de l'utilisateur courant sur chaque opération d'écriture), pas seulement un contrôle de rôle générique.
-- **Statut de compte vérifié à chaque action sensible** : un compte `SUSPENDU` ou `EN_ATTENTE` ne peut pas publier d'activité, créer de fiche Intervenant, même si le token de session est valide (vérification à chaque requête, pas seulement à la connexion).
-- **Règle de publication** : la route de passage d'une `Activity` en `PUBLIEE` vérifie côté serveur que tous les `Intervenant` associés sont au statut `VALIDEE` (Phase 6 §4.3) — jamais une confiance dans un état affiché côté client.
-- **Accès admin** : les routes d'administration sont isolées (préfixe dédié), protégées par le rôle `ADMIN`, avec una journalisation systématique via `AdminAction` (Phase 6 §3.8) — aucune action admin sensible sans entrée d'audit correspondante.
-- Pas de création de compte admin par auto-inscription : un compte `ADMIN` est créé manuellement (script/accès direct base) ou par un admin existant, jamais via le formulaire public.
+- Throttling serveur connexion/inscription/contact, selon IP, compte si disponible et cible. Pas de captcha initial (D-031), ajout possible si nécessaire.
+- Contact anonyme : limiter les envois répétés, les tailles de message et l'abus d'une même cible.
+- Signalements : ouverts aux visiteurs avec email ; protéger contre les rafales sans empêcher un signalement légitime.
+- Texte utilisateur échappé, pas de HTML arbitraire ; validation serveur systématique.
+- Pas de succès de contact avant confirmation technique d'envoi ; reprise contrôlée et prévention des doublons.
+- L'envoi d'email ne prouve ni livraison finale, ni lecture, ni réponse, ni intervention conclue.
 
-## 5. Protection des données personnelles (RGPD)
+## 5. Données personnelles : exigences à finaliser avant lancement
 
-- **Base légale** : exécution du service demandé par l'utilisateur (inscription, mise en relation) pour les données de compte/profil ; intérêt légitime encadré pour la modération.
-- **Minimisation** : ne collecter que les champs nécessaires au fonctionnement (Phase 6) ; pas de champ superflu (ex. pas de date de naissance, pas de numéro de téléphone personnel obligatoire).
-- **Consentement** : case à cocher explicite (non pré-cochée) à l'inscription pour la politique de confidentialité ; pas de consentement implicite.
-- **Droit d'accès/rectification** : accessible depuis l'espace "Paramètres du compte" (Phase 4 §2).
-- **Droit à l'effacement** : anonymisation à la demande (D12, Phase 6 §4.2), traitée sous un délai raisonnable (recommandation : 30 jours max, conforme RGPD).
-- **Durée de conservation** : cf. décision D32.
-- **Registre des traitements** : document à tenir à jour (hors périmètre technique direct, mais à initier dès le lancement — responsabilité produit/organisationnelle).
-- **Hébergement UE** : confirmé par le choix d'hébergeur/région en Phase 5 (§7, risque identifié) — à vérifier explicitement au moment de la configuration effective (Phase 10).
-- **Cookies** : uniquement des cookies strictement nécessaires (session) au MVP (pas d'analytics tiers avec cookies de tracking sans consentement) — si un outil d'analytics est ajouté plus tard, prévoir un bandeau de consentement (hors périmètre MVP, Phase 3).
+- Inventorier traitements, catégories, destinataires et sous-traitants ; définir les bases légales avec la revue compétente.
+- Minimiser les données ; expliquer au demandeur que son nom/email/message sont transmis au prestataire pour réponse.
+- Distinguer information de confidentialité, acceptation contractuelle éventuelle et consentements facultatifs : une case unique ne règle pas tous les traitements.
+- Fournir les informations et les moyens d'exercer les droits ; définir une procédure pour les données fournies sans compte.
+- Suppression D-012 : examiner profil, tokens, fichiers, demandes, notifications et champs libres d'audit, pas seulement l'email utilisateur.
+- **Conservation D-032 à réexaminer** : l'historique prévoit deux ans pour les demandes et un audit indéfini. Documenter et faire valider les durées par catégorie avant production ; ne pas présenter la durée illimitée comme automatiquement justifiée.
+- Définir la purge et sa vérification, y compris sur sauvegardes selon la politique retenue.
+- Vérifier régions, contrats et éventuels transferts de chaque service réellement configuré ; une région UE seule n'atteste pas toute la conformité.
+- Pas de suivi publicitaire au MVP. Toute nouvelle mesure d'audience doit être évaluée avant ajout.
 
-## 6. Lutte contre les abus et le spam
+## 6. Sécurité applicative
 
-- **Formulaire de contact (`ContactRequest`, D30)** : throttling applicatif **par IP** (l'émetteur n'a pas de compte, cf. pivot de modèle) — ex. limite de N demandes par IP par heure, et par activité ciblée pour éviter le harcèlement d'un Organisateur en particulier.
-- **Inscription** : vérification d'email (lien de confirmation) avant activation complète du compte (même si le compte reste `EN_ATTENTE` de validation admin en parallèle) ; cf. décision D31 pour un éventuel captcha.
-- **Signalement (`Report`)** : pas de limite de signalement légitime, mais surveillance des faux signalements en masse (traçabilité par `authorUserId` ou `authorEmail`/IP pour un visiteur non connecté, D46 — un admin peut identifier un pattern abusif).
-- **Contenu des fiches/profils** : pas d'exécution de contenu utilisateur (pas de HTML riche/scripts) — texte simple avec échappement systématique à l'affichage (protection XSS de base, cf. §7).
+- Validation des entrées côté serveur ; contrôles d'accès indépendants de l'interface.
+- Vérification des protections CSRF/origine pour chaque route mutante ; ne pas supposer qu'une bibliothèque couvre toute route personnalisée.
+- Upload logos : type réel, taille maximale, nom généré, stockage non exécutable et accès contrôlé.
+- En-têtes de sécurité adaptés et testés : CSP, HSTS en production HTTPS, nosniff, politique de référent.
+- Secrets hors dépôt ; aucune valeur réelle ni URL de base sensible dans les logs/PR.
+- Suivi des dépendances et vulnérabilités avant déploiement.
+- Tests/previews avec données synthétiques ; aucune opération de test sur la base de production.
+- Logs/Sentry : éviter mots de passe, tokens et corps de demandes.
 
-## 7. Sécurité applicative générale
+## 7. Sauvegarde et lancement
 
-- **Validation des entrées** : toute donnée entrante (formulaires, API) validée côté serveur avec un schéma strict (ex. Zod, cohérent avec TypeScript), jamais une confiance aveugle dans la validation côté client.
-- **Protection XSS** : pas de rendu HTML brut de contenu utilisateur ; échappement systématique (comportement par défaut de React/Next.js, à ne jamais contourner avec `dangerouslySetInnerHTML` sur du contenu utilisateur).
-- **Protection CSRF** : gérée nativement par les mécanismes de Next.js/Auth.js pour les formulaires et API mutantes (vérification d'origine).
-- **Upload de fichiers (logo)** : restriction de type MIME (images uniquement), taille maximale, renommage du fichier stocké (pas de nom fourni par l'utilisateur conservé tel quel), pas d'exécution possible depuis le stockage de fichiers.
-- **En-têtes de sécurité HTTP** : `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` — cf. décision D34 pour le niveau de rigueur au MVP.
-- **Dépendances** : mise à jour régulière, alertes automatiques sur vulnérabilités connues (ex. Dependabot/GitHub Advisories), pas de dépendance non maintenue pour un composant sensible (auth, upload).
-- **Secrets** : jamais commités dans le dépôt (variables d'environnement gérées par l'hébergeur — Vercel — et non versionnées), rotation possible des secrets OAuth/API en cas de compromission suspectée.
+D-035 maintenue : sauvegardes quotidiennes, rétention minimale prévue de sept jours ; vérifier le service choisi et tester une restauration.
 
-## 8. Disponibilité et sauvegarde
+D-034 maintenue : audit applicatif avant toute ouverture publique, rapport et correction des points bloquants. La sécurité s'applique à chaque épic ; l'audit final ne remplace pas les tests pendant le développement.
 
-- **Sauvegardes base de données** : sauvegardes automatiques régulières côté hébergeur managé (Neon/Supabase, Phase 5), avec une politique de rétention minimale — cf. décision D35.
-- **Plan de reprise minimal** : restauration possible depuis une sauvegarde récente en cas d'incident ; pas d'exigence de réplication multi-région au MVP (cohérent avec Phase 3 §4, pas de haute disponibilité exigée).
+## 8. Risques, alternatives et critères
 
-## 9. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
+Risques prioritaires : fuite entre prestataires, accès maintenu après suspension, usurpation du destinataire, spam, fausse impression d'habilitation, données personnelles restant dans les champs libres.
 
-| # | Décision retenue |
-|---|---|
-| D31 | **Pas de captcha au MVP.** Throttling serveur seul (limite de tentatives/requêtes par compte et par IP, §3 et §6). Captcha (ex. Cloudflare Turnstile) ajouté seulement si des abus réels sont constatés. |
-| D32 | **`ContactRequest` conservées 2 ans**, puis purgées ou anonymisées. Journal d'audit (`AdminAction`) conservé indéfiniment (données déjà anonymisées côté compte). |
-| D33 | *(révisée)* **Rappel explicite et visible dans le produit** (pas seulement en CGU) : au moment de la publication d'une activité par l'Organisateur (déclarant un ou plusieurs Intervenants) et à l'envoi d'une demande de contact par un visiteur. Formulation à affiner avec un regard juridique avant lancement, mais le principe (rappel produit, pas seulement CGU) est acté — intégré à la Phase 4 (UX révisée, §3.3 et §3.4). |
-| D34 | **Audit de sécurité applicatif complet avant le tout premier lancement en production.** Choix plus exigeant que le défaut recommandé : implique un jalon explicite "Audit sécurité" avant la mise en production, à planifier en fin de Phase 10 (cf. Phase 9 — Backlog) plutôt qu'un simple durcissement itératif post-lancement. Les presets standards (Next.js/Vercel, CSP basique) restent la base de travail dès le début du développement ; l'audit valide/complète cette base avant l'ouverture publique. |
-| D35 | **Sauvegardes quotidiennes, rétention 7 jours** dès le MVP. |
+Pas de vérification automatisée d'antécédents ni de promesse de certification dans cette V1. L'absence de paiement ne dispense pas de protéger les comptes et les demandes.
 
-## 10. Risques identifiés (niveau sécurité)
-
-| Risque | Probabilité | Impact | Mitigation |
-|---|---|---|---|
-| Confusion des utilisateurs sur le niveau de vérification (croire que "structure validée" = "habilitée à intervenir auprès de mineurs") | Élevée si non traité explicitement | Élevé | Message explicite et récurrent (§2, D33), pas relégué aux seules CGU |
-| Abus du formulaire de contact (spam, harcèlement) en l'absence de messagerie modérable en temps réel | Moyenne | Moyen | Throttling + captcha (D31) + signalement possible a posteriori |
-| Compromission d'un compte admin (droits élevés) | Faible mais impact élevé | Élevé | Authentification admin avec les mêmes standards stricts que les autres comptes a minima ; envisager une exigence supplémentaire (ex. mot de passe fort obligatoire) sans bloquer le MVP par une 2FA complète (évolution possible) |
-| Fuite de données via une sauvegarde ou un export mal sécurisé | Faible | Élevé | Accès aux sauvegardes restreint à l'hébergeur managé et à l'équipe technique, jamais de export en clair partagé hors canal sécurisé |
-
-## 11. Alternatives envisagées et écartées
-
-- **Authentification à deux facteurs (2FA) obligatoire dès le MVP pour tous les comptes** : écartée pour le MVP — ajoute de la friction à l'inscription pour un bénéfice de sécurité marginal à ce stade (pas de données financières) ; à réévaluer au minimum pour les comptes admin en évolution proche.
-- **Vérification automatisée d'antécédents/habilitations** : écartée (cf. Phase 1 §5, hors périmètre) — techniquement et légalement lourde, hors de portée d'un MVP, et risquerait de laisser croire à une garantie que la plateforme ne peut pas offrir.
-- **Chiffrement applicatif supplémentaire des champs en base (au-delà du chiffrement au repos standard de l'hébergeur managé)** : écarté au MVP — les données concernées ne sont pas des catégories particulières au sens RGPD (pas de données de santé, opinions, etc.), le chiffrement au repos standard de l'hébergeur est jugé suffisant.
-
-## 12. Critères de validation de la phase
-
-- [x] D31 à D35 tranchées.
-- [x] Le point §2 (limite de responsabilité) est jugé suffisamment clair et sera repris dans l'UX (Phase 4, amendement à intégrer en Phase 10) et les CGU.
-- [x] Mesures d'authentification/autorisation jugées adaptées au MVP.
-- [x] Risques jugés complets à ce stade.
-
-**Phase 7 validée le 2026-08-27, amendée le 2026-08-27 (pivot de modèle : RBAC à deux rôles, throttling par IP, responsabilité reformulée).** D34 introduit un jalon "Audit de sécurité" avant mise en production, à inscrire dans le backlog (Phase 9). → Passage à la Phase 8 (Organisation du dépôt).
+- [ ] Tests positifs et négatifs d'auth/RBAC/propriété.
+- [ ] Visibilité cohérente après suspension/suppression.
+- [ ] Protections anti-abus et envois testés.
+- [ ] Politique de données et textes relus ; durées de conservation explicites.
+- [ ] Restauration et audit D-034 réalisés avant production.

@@ -1,6 +1,23 @@
 # EduConnect — Journal des décisions (ADR léger)
 
-Ce fichier consolide les décisions **validées** phase après phase. Chaque entrée est courte : contexte, décision, conséquences. Les options non retenues et le détail des arbitrages restent dans le document de phase correspondant.
+Ce fichier conserve l'historique des décisions et distingue les décisions explicites des propositions. **D-047 est l'orientation produit courante ; D-048 fixe la méthode.** Les anciennes entrées restent lisibles mais leurs mentions de statut ci-dessous priment sur leur formulation historique. Une décision prise « par défaut non contesté » n'est pas une nouvelle confirmation utilisateur.
+
+## Lecture rapide — état courant
+
+| Référence | Statut courant |
+|---|---|
+| D-047 | Validée explicitement : le prestataire publie l'offre et reçoit la demande |
+| D-048 | Validée explicitement : pas d'enquête préalable bloquante |
+| D-002 / D-015 | Pilote gratuit sans paiement ni quota maintenu ; pas de gratuité définitive actée |
+| D-004 / D-006 | Territoire pilote et nom définitif encore ouverts |
+| D-001 / D-005 / D-007 / D-023 | Anciennes formulations remplacées ou sans objet pour la V1 |
+| D-042 à D-045 | Ancien pivot remplacé ; traduction du nouveau modèle proposée dans P-001 |
+| D-032 | Politique historique à revoir avant production ; pas de conformité certifiée |
+| P-001 | Proposition fonctionnelle/technique à relire avant code |
+| P-002 | Proposition de couverture géographique à arbitrer |
+| P-003 | Hypothèses commerciales, aucun prix validé |
+
+Les autres choix compatibles restent en vigueur. Les phases réécrites ne sont pas toutes revalidées par la seule réponse sur le prestataire. Les renvois de sections dans les entrées historiques désignent les versions de documents de l'époque ; consulter les phases courantes pour l'implémentation.
 
 Format :
 
@@ -15,18 +32,21 @@ Format :
 ---
 
 ## D-001 — Modèle de mise en relation
+- **Statut courant : Historique remplacé par D-047 pour l'acteur et D-030 pour le canal ; pas de messagerie MVP.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit
 - Décision : Modèle "annuaire + messagerie" : les Intervenants publient des fiches/offres, les Organisateurs recherchent et contactent directement via une messagerie interne.
 - Conséquences : Le modèle de données doit rester ouvert à une évolution vers un système d'appel à candidatures, sans l'implémenter au MVP.
 
 ## D-002 — Modèle économique
+- **Statut courant : Maintenue pour le pilote uniquement. Vocation commerciale confirmée dans la demande initiale, modalités non arrêtées ; voir P-003. Aucun champ plan ni paiement à ajouter sans lot approuvé.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit
 - Décision : Plateforme gratuite au lancement, pour tous les rôles. Pas de paiement en ligne au MVP.
 - Conséquences : Pas de brique de facturation/paiement dans l'architecture MVP. Prévoir néanmoins un champ de statut de compte extensible (ex. `plan`) pour ne pas bloquer une monétisation future.
 
 ## D-003 — Vérification des structures et administration
+- **Statut courant : Principe de validation manuelle et d'audit maintenu ; l'acteur cible devient le prestataire selon D-047/P-001, pas deux catégories de comptes métier.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit
 - Décision : Vérification manuelle par une équipe d'administration avant publication d'un profil. Un espace d'administration est livré dès le MVP, avec gestion des comptes admin (plusieurs comptes possibles), modération des structures/missions et droit d'édition sur les comptes et les fiches mission.
@@ -39,6 +59,7 @@ Format :
 - Conséquences : Le modèle de données doit inclure une notion de localisation structurée (région/département/ville) dès le MVP pour permettre le filtrage, même si la mise sur le marché reste régionale au départ.
 
 ## D-005 — Canal de mise en relation
+- **Statut courant : Historique : formulaire email D-030 maintenu, destinataire prestataire D-047. Une messagerie future exige un nouveau cadrage ; elle n'est pas automatiquement planifiée.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit
 - Décision : Les échanges post mise-en-relation restent dans la messagerie interne de la plateforme (pas de partage libre de coordonnées au MVP). *Vision produit cible confirmée.*
@@ -51,6 +72,7 @@ Format :
 - Conséquences : Aucune, à date.
 
 ## D-007 — Cumul de rôles sur un compte
+- **Statut courant : Obsolète : ancien choix par défaut, remplacé par le modèle courant D-047 et la proposition de rôles P-001.**
 - Date : 2026-08-27
 - Phase : 2 — Spécifications fonctionnelles
 - Décision : Un compte a un type unique (Intervenant *ou* Organisateur). Décision retenue par défaut (option recommandée), le retour utilisateur n'ayant pas explicitement contesté ce point.
@@ -69,6 +91,7 @@ Format :
 - Conséquences : Un seul rôle `admin` dans le modèle de permissions ; granularité plus fine réévaluable plus tard.
 
 ## D-010 — Taxonomie thématiques/publics
+- **Statut courant : Principe maintenu ; dans le modèle courant, les prestataires sélectionnent les valeurs administrées.**
 - Date : 2026-08-27
 - Phase : 2 — Spécifications fonctionnelles
 - Décision : Liste fermée, gérée par les administrateurs (pas de saisie libre par les Intervenants).
@@ -87,6 +110,7 @@ Format :
 - Conséquences : À détailler précisément en Phase 7 — Sécurité (quelles données sont anonymisées, durée de conservation des métadonnées).
 
 ## D-013 — Visibilité de l'annuaire
+- **Statut courant : Amendée : annuaire public maintenu ; les visiteurs peuvent aussi contacter et signaler sans compte (D-030/D-046). Publication par le prestataire actif selon P-001.**
 - Date : 2026-08-27
 - Phase : 2 — Spécifications fonctionnelles
 - Décision : Annuaire public consultable sans compte (données non sensibles uniquement). Seuls les comptes connectés et validés (statut "actif") peuvent créer une fiche mission ; les visiteurs sont strictement en lecture.
@@ -99,6 +123,7 @@ Format :
 - Conséquences : La Phase 5 (Architecture) doit choisir une solution d'authentification supportant nativement email/mot de passe + OAuth Google (ex. Auth.js/NextAuth, Supabase Auth, Auth0, ou implémentation OAuth manuelle). Impact sécurité : gestion des secrets OAuth (Phase 7).
 
 ## D-015 — Limite de fiches mission
+- **Statut courant : Absence de quota conservée pour les offres du pilote ; toute formule limitée requiert un nouvel arbitrage.**
 - Date : 2026-08-27
 - Phase : 3 — Définition du MVP
 - Décision : Aucun plafond au MVP.
@@ -147,6 +172,7 @@ Format :
 - Conséquences : Migrations et schéma de données gérés via Prisma dès la Phase 6.
 
 ## D-023 — Messagerie temps réel vs rafraîchissement
+- **Statut courant : Sans objet au MVP depuis D-030 : ni messagerie, ni polling de conversation.**
 - Date : 2026-08-27
 - Phase : 5 — Architecture technique
 - Décision : Rafraîchissement périodique (pas de WebSocket) au MVP.
@@ -165,6 +191,7 @@ Format :
 - Conséquences : Aucune infrastructure supplémentaire à gérer pour un environnement de préproduction dédié au lancement.
 
 ## D-026 — Séparation `User` / `Structure`
+- **Statut courant : Séparation User/Structure maintenue ; cible proposée : un profil par prestataire, pas de profil métier obligatoire pour Admin.**
 - Date : 2026-08-27
 - Phase : 6 — Modèle de données
 - Décision : `User` (authentification, rôle, statut) séparé de `Structure` (profil métier), relation 1-1 pour les rôles Intervenant/Organisateur.
@@ -177,6 +204,7 @@ Format :
 - Conséquences : Nécessite de charger/maintenir un référentiel géographique (ex. données INSEE/API Géo officielle) dans la base au MVP. Ouvre la voie à un filtrage fiable et à une future carte interactive/recherche par rayon.
 
 ## D-028 — Conversations multiples sur une même fiche
+- **Statut courant : Sans objet dans la V1 ; aucune réintroduction de messagerie n'est engagée.**
 - Date : 2026-08-27
 - Phase : 6 — Modèle de données
 - Décision : Sans objet au MVP — la messagerie/les conversations sont retirées du périmètre MVP (cf. D-030). Point à retrancher lorsque la messagerie sera réintroduite en évolution post-MVP.
@@ -189,6 +217,7 @@ Format :
 - Conséquences : Utilisé pour `Report` et `AdminAction`. Couvrir par des tests d'intégration dès la Phase 10 pour éviter les références orphelines.
 
 ## D-030 — Contact sans messagerie au MVP *(amendement)*
+- **Statut courant : Canal maintenu, acteurs actualisés par D-047 : visiteur demandeur → prestataire propriétaire de l'activité. ContactRequest et message sont stockés, mais pas de conversation.**
 - Date : 2026-08-27
 - Phase : 6 — Modèle de données (amende la Phase 3)
 - Décision : Retrait de la messagerie interne du MVP (cf. amendement de D-005). Le contact Organisateur → Intervenant se fait via un formulaire simple : message saisi sur la fiche/le profil, envoyé par email à l'Intervenant, sans conversation persistée en base.
@@ -201,6 +230,7 @@ Format :
 - Conséquences : Ajout d'un captcha (ex. Cloudflare Turnstile) à prévoir en évolution si des abus réels sont constatés après lancement.
 
 ## D-032 — Durées de conservation des données
+- **Statut courant : À réexaminer avant production : justifier les durées par catégorie et traiter les champs libres ; l'anonymisation du compte ne rend pas automatiquement tout l'audit anonyme.**
 - Date : 2026-08-27
 - Phase : 7 — Sécurité
 - Décision : `ContactRequest` conservées 2 ans puis purgées/anonymisées. Journal d'audit (`AdminAction`) conservé indéfiniment.
@@ -255,6 +285,7 @@ Format :
 - Conséquences : Chaque épic (`docs/09-backlog.md` §3) est livré et validé avant de démarrer le suivant.
 
 ## D-041 — Definition of Done
+- **Statut courant : Exigences de qualité maintenues. main est la branche cible historique, absente au relevé ; branche d'intégration/CI à régulariser avant clôture E0. Une PR sans exécution CI n'est pas verte.**
 - Date : 2026-08-27
 - Phase : 9 — Backlog
 - Décision : Une story est terminée si : PR fusionnée sur `main` avec CI verte, tests couvrant le critère d'acceptation, revue humaine si zone sensible (D-039), documentation `docs/` mise à jour si la story amende une décision antérieure.
@@ -264,34 +295,82 @@ Format :
 
 ## Amendement majeur du 2026-08-27 — Pivot vers un modèle "annuaire d'activités"
 
-Après validation complète des Phases 1-9, l'utilisateur a demandé un changement de modèle fondamental : ce n'est plus un annuaire d'Intervenants qui publient des offres, mais un **annuaire d'activités publiées par les Organisateurs**, chacune déclarant au moins un Intervenant (fiche sans compte, gérée et réutilisable par l'Organisateur, modérée par l'admin). En conséquence, il n'existe plus que **deux rôles de compte : Organisateur et Administrateur**. Les Phases 1 à 9 ont été amendées en conséquence (bandeaux d'amendement en tête de chaque document concerné). Les décisions ci-dessous (D-042 à D-046) documentent ce pivot ; les décisions antérieures (D-001 à D-041) restent en vigueur sauf mention contraire explicite dans leur propre entrée (ex. D-005, D-007 marquées révisées/obsolètes).
+Après validation complète des Phases 1-9, l'utilisateur a demandé un changement de modèle fondamental : ce n'est plus un annuaire d'Intervenants qui publient des offres, mais un **annuaire d'activités publiées par les Organisateurs**, chacune déclarant au moins un Intervenant (fiche sans compte, gérée et réutilisable par l'Organisateur, modérée par l'admin). En conséquence, il n'existe plus que **deux rôles de compte : Organisateur et Administrateur**. Ce passage décrit l'historique, désormais remplacé par D-047. Les entrées D-042 à D-046 sont conservées pour traçabilité ; leurs mentions de statut courant et les propositions suivantes déterminent ce qui reste applicable.
 
 ## D-042 — Modèle annuaire d'activités
+- **Statut courant : Remplacée par D-047 : publication d'offres par leur prestataire, non de retours d'expérience par l'établissement d'accueil.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit (amendement post-Phase 9)
 - Décision : L'Organisateur publie ses propres activités pédagogiques ; chaque activité doit déclarer au moins un Intervenant. Remplace le modèle initial où l'Intervenant publiait ses propres offres.
 - Conséquences : Révision de D-001 (modèle de mise en relation) et D-005 (canal de contact, désormais vers l'Organisateur). Répercuté dans tous les documents de phase (01, 02, 03, 04, 06, 07, 08, 09).
 
 ## D-043 — Deux rôles de compte seulement
+- **Statut courant : Ancien modèle remplacé par D-047 ; noms techniques PRESTATAIRE/ADMIN proposés en P-001, pas encore migrés.**
 - Date : 2026-08-27
 - Phase : 1 — Cadrage produit (amendement)
 - Décision : Seuls les rôles Organisateur et Administrateur existent comme comptes utilisateurs. Le rôle Intervenant (compte) est supprimé.
 - Conséquences : D-007 (cumul de rôles) devient obsolète — plus qu'un seul rôle "métier". `User.role` n'a plus que deux valeurs possibles (Phase 6).
 
 ## D-044 — Fiches Intervenant modérées
+- **Statut courant : Retrait du carnet et de sa double validation proposé en P-001 ; ne pas effacer les données historiques sans migration approuvée.**
 - Date : 2026-08-27
 - Phase : 1-2 (amendement)
 - Décision : Chaque fiche Intervenant créée par un Organisateur est soumise à validation admin (statuts `EN_ATTENTE`/`VALIDEE`/`REJETEE`/`DESACTIVEE`) avant de pouvoir être utilisée sur une activité publiée. Une fois validée, réutilisable par le même Organisateur sans nouvelle validation.
 - Conséquences : Double file de modération admin (comptes + fiches Intervenant), cf. Phase 3 §7 (risque de goulot d'étranglement). Nouvelle entité `Intervenant` en Phase 6.
 
 ## D-045 — Règle de publication d'activité
+- **Statut courant : Remplacement proposé en P-001 : publication par prestataire actif/vérifié et offre complète, sans fiche individuelle obligatoire.**
 - Date : 2026-08-27
 - Phase : 2 (amendement)
 - Décision : Une activité ne peut passer au statut `PUBLIEE` que si l'Organisateur est `ACTIF` et que tous les Intervenants qu'elle déclare sont au statut `VALIDEE`. Contrôle applicatif serveur, pas seulement côté interface.
 - Conséquences : Règle vérifiée à chaque tentative de publication (Phase 7 §4), testée explicitement en Phase 10 (épic E5).
 
 ## D-046 — Signalement ouvert aux visiteurs non connectés
+- **Statut courant : Principe hérité conservé, initialement retenu par défaut ; cibles courantes proposées STRUCTURE/ACTIVITY. Pas de nouvelle validation explicite du détail par l'utilisateur.**
 - Date : 2026-08-27
 - Phase : 6 (amendement, décision par défaut non contestée)
 - Décision : Un visiteur sans compte peut signaler une activité ou une fiche Intervenant (`Report.authorUserId` nullable, `authorEmail` requis dans ce cas).
 - Conséquences : Cohérent avec le fait que la consultation et le contact ne nécessitent pas de compte. Traçabilité par email/IP pour limiter les faux signalements (Phase 7 §6, §9).
+
+
+---
+
+## D-047 — Le prestataire publie et reçoit les demandes
+- Date : 2026-08-27.
+- Statut : **validée explicitement par l'utilisateur**.
+- Source : à la question « Dans ta V1, qui doit publier une activité et recevoir les demandes associées ? », réponse « Le prestataire proposant l’intervention ».
+- Décision : l'annuaire présente les offres d'activités pédagogiques publiées par la structure qui propose l'intervention ; les demandes lui sont adressées directement.
+- Conséquences : remplace l'acteur et la finalité décrits en D-042/D-043. Pas de parcours hybride de retours d'expérience ajouté. Les règles héritées de carnet/modération/publication D-044/D-045 sont à remplacer selon P-001 avant nouveau code métier.
+- Limites : cette réponse ne valide ni tarifs, ni paiement dès le MVP, ni nom technique de rôle, ni migration destructrice. Les choix techniques compatibles sont conservés.
+
+## D-048 — Construire sans enquête préalable sur le besoin
+- Date : 2026-08-27.
+- Statut : **validée explicitement dans la discussion produit**.
+- Décision : considérer le besoin comme établi pour avancer ; ne pas imposer d'enquête ou d'interviews préalables à la construction.
+- Conséquences : passer au cadrage opérationnel et au développement après validation du périmètre. Conserver tests logiciels, recette d'usage et indicateurs opérationnels.
+- Limites : ce choix n'est ni une preuve de rentabilité ni une validation du prix ou de la volonté de payer.
+
+## Propositions issues du réalignement — non assimilables à des décisions validées
+
+### P-001 — Traduction fonctionnelle et technique
+- Statut : **proposée pour revue avant implémentation**.
+- Rôles cibles PRESTATAIRE/ADMIN ; structure demandeuse sans compte obligatoire.
+- Un profil prestataire, plusieurs offres ; retrait du carnet d'intervenants et de sa double validation du parcours V1.
+- Compte en attente/rejeté : correction de dossier uniquement. Publication par compte actif et email vérifié, offre complète avec thème/public.
+- Visibilité cohérente liste/détail/contact ; suspension rend les offres invisibles ; pas de republication automatique d'offres retirées.
+- Demande simple enregistrée puis transmise au prestataire ; pas de messagerie.
+- Plan R0 avec inventaire et mapping réel des propriétaires ; pas de conversion automatique d'un ancien établissement d'accueil en prestataire.
+- Références : phases 2/3/4/6/7/9. L'approbation de cette proposition n'autorise pas à elle seule une suppression de données.
+
+### P-002 — Zone desservie distincte du siège
+- Statut : **proposée, à arbitrer avant E5/E6**.
+- Recommandation : départements desservis par offre, distincts de la ville du siège et de la localisation de référence.
+- Définir les cas sur place, déplacement, distanciel, hybride et couverture nationale avant migration.
+- Pas de carte ni rayon kilométrique ajouté au MVP.
+
+### P-003 — Monétisation de la plateforme
+- Statut : **hypothèses non validées**.
+- Piste prioritaire : abonnement prestataire, demandeurs gratuits ; freemium et licence réseau comme alternatives à cadrer.
+- D-002/D-015 restent applicables au pilote. Aucun tarif, quota, durée d'essai ou date de facturation acquis.
+- Le paiement des interventions reste hors plateforme en V1.
+- Référence : [note économique](10-modele-economique.md).
