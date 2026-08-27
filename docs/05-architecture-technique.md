@@ -1,6 +1,6 @@
 # Phase 5 — Architecture technique
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document traduit le MVP (Phase 3) et l'UX (Phase 4) en choix techniques concrets. Il sert de référence directe pour l'organisation du dépôt (Phase 8) et le développement (Phase 10). Les recommandations visent la simplicité et la maintenabilité pour une petite équipe/un lancement pilote, pas la scalabilité massive prématurée.
 
@@ -22,7 +22,7 @@ Choisir une stack technique cohérente, justifiée par les contraintes déjà va
 ## 3. Proposition de stack
 
 ### 3.1 Langage et framework applicatif
-**Recommandation : TypeScript + Next.js** (React), en full-stack (une seule application gérant le front et les routes API/serveur).
+**Retenu : TypeScript + Next.js** (React), en full-stack (une seule application gérant le front et les routes API/serveur), avec **Tailwind CSS + HeroUI** comme système de composants/design (cf. décision D21, §6) — choix guidé par la priorité donnée au rendu visuel du produit.
 
 Pourquoi :
 - Un seul langage (TypeScript) sur tout le projet → plus simple à maintenir et à faire évoluer par une petite équipe (et par Claude Code).
@@ -91,12 +91,48 @@ Nécessaire pour les logos/images de profil des structures. **Recommandation : s
 ## 5. Journalisation et observabilité minimale
 
 - Journal des actions admin (validation, rejet, suspension, édition, traitement de signalement) : table dédiée en base (cf. Phase 6), pas de service externe nécessaire au MVP.
-- Logs applicatifs et erreurs : solution intégrée à l'hébergeur (Vercel) au MVP ; un service dédié (ex. Sentry) est une évolution recommandée mais non bloquante pour le lancement pilote (cf. D24).
+- Logs applicatifs et erreurs : **Sentry** dès le MVP (palier gratuit), en complément des logs intégrés à l'hébergeur (cf. D24).
 
-## 6. Décisions à prendre pour valider cette phase
+## 6. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D21 — Stack applicative (confirmation)
-Confirmer TypeScript + Next.js + PostgreSQL + Prisma comme socle, ou préférence différente (ex. équipe déjà expérimentée sur une autre stack) ?
+| # | Décision retenue |
+|---|---|
+| D21 | **Next.js + TypeScript + Tailwind CSS + HeroUI** (détail ci-dessous). |
+| D22 | **Prisma** comme ORM. |
+| D23 | **Rafraîchissement périodique** pour la messagerie (pas de WebSocket au MVP). |
+| D24 | **Sentry** (ou équivalent) dès le MVP pour le monitoring d'erreurs. |
+| D25 | **`production` + previews par pull request** (Vercel) — pas de `staging` persistant dédié au MVP (non contesté, valeur par défaut recommandée retenue). |
+
+### Détail des options envisagées (archive)
+
+### D21 — Stack applicative, avec priorité donnée au rendu visuel/design
+
+L'utilisateur souhaite un rendu **très soigné visuellement**, avec une composante design/graphisme forte (au-delà d'un simple "fonctionnel"). Le choix du socle front doit donc privilégier la **liberté et la qualité de rendu graphique**, pas seulement la vitesse de développement. Trois propositions, toutes compatibles avec le reste de la stack (PostgreSQL, Prisma, Auth.js) :
+
+**Option A — Next.js + Tailwind CSS + shadcn/ui + Framer Motion (recommandée)**
+- Tailwind CSS : contrôle total et fin du design (espacements, couleurs, typographie) sans repartir de zéro à chaque composant.
+- shadcn/ui : ce n'est pas une bibliothèque "à installer" classique — les composants (boutons, formulaires, modales, menus) sont générés directement dans le code du projet, accessibles par défaut (clavier, ARIA), et **entièrement personnalisables** pour coller à une charte graphique propre à EduConnect. C'est le choix dominant actuellement pour des interfaces produit modernes et soignées.
+- Framer Motion : micro-animations et transitions fluides (apparition de cartes, changements d'état, feedback visuel) — apporte le côté "fini/premium" sans complexité excessive.
+- Compromis : demande un vrai travail de direction artistique (couleurs, typographie, spacing) en amont — ce travail se fait au fil du développement (cf. D18 : pas de maquettage Figma préalable), mais nécessite qu'on définisse une petite charte graphique dès le début du développement (palette, typographie, système d'espacement) pour garder une cohérence visuelle.
+
+**Option B — Next.js + Tailwind CSS + UI kit premium préconçu (ex. Untitled UI, Tremor, Aceternity UI)**
+- Composants déjà stylés avec une direction artistique aboutie (au lieu de partir d'une base neutre comme shadcn/ui).
+- Rendu "propre" garanti plus vite, avec moins d'effort de direction artistique interne.
+- Compromis : certains de ces kits sont payants (licence unique, pas d'abonnement en général) ; moins de singularité visuelle (risque de "ressembler à d'autres produits" utilisant le même kit) ; personnalisation plus limitée que shadcn/ui.
+
+**Option C — Nuxt (Vue) + Tailwind CSS + Nuxt UI**
+- Équivalent Vue de l'option A/B. Pertinent uniquement si l'équipe/l'utilisateur a une préférence ou une expertise Vue plutôt que React.
+- Écosystème de composants/design un peu moins riche que React à ce jour pour ce type de produit, mais très solide et en progression.
+- Compromis : moins de disponibilité de développeurs freelances/prestataires maîtrisant Vue que React, si le projet doit être repris par une équipe externe plus tard.
+
+**Option A′ — Next.js + Tailwind CSS + HeroUI (retenue, proposée par l'utilisateur)**
+- HeroUI (anciennement NextUI) est une bibliothèque de composants React construite sur Tailwind CSS et React Aria (accessibilité native — clavier, ARIA, focus management).
+- Contrairement à shadcn/ui (composants copiés dans le code, à styliser soi-même), HeroUI livre des composants **déjà stylés avec un rendu moderne et soigné par défaut** (ombres, arrondis, transitions, dark mode intégré), tout en restant **entièrement thémable** via un système de tokens de design (couleurs, rayons, espacements) — bon compromis entre rapidité d'obtention d'un rendu premium et personnalisation poussée.
+- Animations fluides intégrées nativement (s'appuie sur Framer Motion en interne) : pas besoin d'ajouter Framer Motion séparément pour l'essentiel des besoins (transitions de composants, apparition, feedback).
+- Écosystème actif, bonne compatibilité Next.js/App Router/TypeScript.
+- Compromis vs. shadcn/ui : moins de "propriété" du code des composants (mis à jour via une dépendance npm plutôt que du code possédé dans le repo) — en pratique un non-sujet pour ce projet, et plus simple à maintenir à jour.
+
+*Décision retenue : **Option A′ (HeroUI)**. Elle correspond à l'objectif d'un rendu très soigné dès les premiers écrans, avec un thème personnalisé pour donner une identité propre à EduConnect (pas un rendu "par défaut" générique) à définir au début de la Phase 10 (palette de couleurs, typographie, rayons — charte graphique minimale en addendum léger à ce document).*
 
 ### D22 — ORM
 **Prisma** (recommandé, écosystème mature, migrations simples) vs **Drizzle** (plus léger, plus proche du SQL, monte en popularité) ?
@@ -128,6 +164,8 @@ Combien d'environnements dès le MVP : uniquement `production`, ou `production` 
 
 ## 9. Critères de validation de la phase
 
-- [ ] D21 à D25 tranchées.
-- [ ] Stack jugée réaliste vis-à-vis des compétences disponibles (à confirmer par l'utilisateur : équipe technique interne, prestataire, ou développement piloté principalement par Claude Code).
-- [ ] Risques d'hébergement/RGPD jugés couverts à ce stade (détail complet en Phase 7).
+- [x] D21 à D25 tranchées.
+- [x] Stack jugée réaliste vis-à-vis des compétences disponibles.
+- [x] Risques d'hébergement/RGPD jugés couverts à ce stade (détail complet en Phase 7).
+
+**Phase 5 validée le 2026-08-27.** → Passage à la Phase 6 (Modèle de données).

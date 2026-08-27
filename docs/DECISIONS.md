@@ -133,3 +133,33 @@ Format :
 - Phase : 4 — UX
 - Décision : Vouvoiement, registre institutionnel et chaleureux pour tous les contenus (libellés, emails, messages d'erreur).
 - Conséquences : Guide de contenu implicite pour toute rédaction de texte UI/emails dans les phases suivantes.
+
+## D-021 — Stack applicative front
+- Date : 2026-08-27
+- Phase : 5 — Architecture technique
+- Décision : TypeScript + Next.js (full-stack) + Tailwind CSS + HeroUI comme système de composants/design, priorité donnée au rendu visuel soigné.
+- Conséquences : Une charte graphique minimale (palette, typographie, rayons) doit être définie au début de la Phase 10 (développement) via le système de thème HeroUI. Pas de maquettage Figma préalable (cohérent avec D-018).
+
+## D-022 — ORM
+- Date : 2026-08-27
+- Phase : 5 — Architecture technique
+- Décision : Prisma comme ORM pour PostgreSQL.
+- Conséquences : Migrations et schéma de données gérés via Prisma dès la Phase 6.
+
+## D-023 — Messagerie temps réel vs rafraîchissement
+- Date : 2026-08-27
+- Phase : 5 — Architecture technique
+- Décision : Rafraîchissement périodique (pas de WebSocket) au MVP.
+- Conséquences : Pas d'infrastructure temps réel à opérer au lancement ; évolution possible plus tard sans remettre en cause le modèle de données.
+
+## D-024 — Monitoring d'erreurs
+- Date : 2026-08-27
+- Phase : 5 — Architecture technique
+- Décision : Sentry (ou équivalent) dès le MVP.
+- Conséquences : Compte Sentry (palier gratuit) à créer en Phase 8/10, intégration dès le squelette applicatif initial.
+
+## D-025 — Environnements
+- Date : 2026-08-27
+- Phase : 5 — Architecture technique
+- Décision : `production` + previews automatiques par pull request (Vercel), pas de `staging` persistant dédié au MVP.
+- Conséquences : Aucune infrastructure supplémentaire à gérer pour un environnement de préproduction dédié au lancement.
