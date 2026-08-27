@@ -1,6 +1,6 @@
 # Phase 7 — Sécurité
 
-Statut : 🟡 **En attente de validation**
+Statut : ✅ **Validée**
 
 Ce document précise les exigences de sécurité et de conformité applicables au MVP, en s'appuyant sur le modèle de données (Phase 6) et l'architecture (Phase 5). Point d'attention particulier : la plateforme met en relation des structures dont les interventions peuvent avoir lieu **auprès de mineurs** (établissements scolaires, périscolaire) — cf. risque déjà identifié en Phase 1 §7.
 
@@ -67,24 +67,15 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 - **Sauvegardes base de données** : sauvegardes automatiques régulières côté hébergeur managé (Neon/Supabase, Phase 5), avec une politique de rétention minimale — cf. décision D35.
 - **Plan de reprise minimal** : restauration possible depuis une sauvegarde récente en cas d'incident ; pas d'exigence de réplication multi-région au MVP (cohérent avec Phase 3 §4, pas de haute disponibilité exigée).
 
-## 9. Décisions à prendre pour valider cette phase
+## 9. Décisions — validées le 2026-08-27 (voir aussi `docs/DECISIONS.md`)
 
-### D31 — Captcha sur les formulaires publics (inscription, contact)
-- **Option A (recommandée)** : captcha discret (ex. Cloudflare Turnstile, respectueux de la vie privée, gratuit) sur l'inscription et le formulaire de contact, pour limiter les abus automatisés dès le MVP.
-- **Option B** : pas de captcha au MVP, uniquement du throttling serveur ; ajout ultérieur si des abus sont constatés.
-
-### D32 — Durées de conservation des données
-- Compte anonymisé : conservation indéfinie des métadonnées anonymisées et du journal d'audit (`AdminAction`), ou purge après une durée définie (ex. 3 ans) ? **Recommandation : conservation indéfinie du journal d'audit** (nécessaire en cas de litige/récidive d'abus, données déjà anonymisées côté compte), à documenter dans la politique de confidentialité.
-- `ContactRequest` : conservation pour une durée définie (ex. 2 ans) à des fins de preuve en cas de litige/abus, puis purge ou anonymisation complémentaire ?
-
-### D33 — Formulation de la limite de responsabilité (§2)
-- Confirmer l'approche : rappel explicite et visible (pas seulement en CGU) au moment de la publication d'une fiche et de l'envoi d'une demande de contact, du type "EduConnect ne vérifie pas les habilitations légales à intervenir auprès de mineurs — cette vérification relève de la responsabilité de l'Organisateur." Formulation exacte à valider avec un regard juridique si possible (hors périmètre technique).
-
-### D34 — Rigueur des en-têtes de sécurité HTTP au MVP
-- Configuration standard "raisonnable" par défaut (recommandée, ex. presets Next.js/Vercel + CSP basique) au MVP, avec durcissement itératif, ou audit de sécurité applicatif complet avant le tout premier lancement (plus long, plus coûteux) ?
-
-### D35 — Politique de sauvegarde
-- Fréquence/rétention des sauvegardes base de données au MVP : quotidienne avec rétention 7 jours (souvent le défaut des offres gratuites/premier palier des hébergeurs managés, recommandé) suffit-elle, ou faut-il une rétention plus longue dès le MVP ?
+| # | Décision retenue |
+|---|---|
+| D31 | **Pas de captcha au MVP.** Throttling serveur seul (limite de tentatives/requêtes par compte et par IP, §3 et §6). Captcha (ex. Cloudflare Turnstile) ajouté seulement si des abus réels sont constatés. |
+| D32 | **`ContactRequest` conservées 2 ans**, puis purgées ou anonymisées. Journal d'audit (`AdminAction`) conservé indéfiniment (données déjà anonymisées côté compte). |
+| D33 | **Rappel explicite et visible dans le produit** (pas seulement en CGU) : au moment de la publication d'une fiche par un Intervenant et à l'envoi d'une demande de contact par un Organisateur. Formulation à affiner avec un regard juridique avant lancement, mais le principe (rappel produit, pas seulement CGU) est acté — impact direct sur la Phase 4 (UX), à intégrer comme amendement léger lors du développement (Phase 10) des écrans concernés. |
+| D34 | **Audit de sécurité applicatif complet avant le tout premier lancement en production.** Choix plus exigeant que le défaut recommandé : implique un jalon explicite "Audit sécurité" avant la mise en production, à planifier en fin de Phase 10 (cf. Phase 9 — Backlog) plutôt qu'un simple durcissement itératif post-lancement. Les presets standards (Next.js/Vercel, CSP basique) restent la base de travail dès le début du développement ; l'audit valide/complète cette base avant l'ouverture publique. |
+| D35 | **Sauvegardes quotidiennes, rétention 7 jours** dès le MVP. |
 
 ## 10. Risques identifiés (niveau sécurité)
 
@@ -103,7 +94,9 @@ Fixer les mesures de sécurité et de conformité non négociables avant le dév
 
 ## 12. Critères de validation de la phase
 
-- [ ] D31 à D35 tranchées.
-- [ ] Le point §2 (limite de responsabilité) est jugé suffisamment clair et sera repris tel quel dans l'UX (Phase 4, à amender si besoin) et les CGU.
-- [ ] Mesures d'authentification/autorisation jugées adaptées au MVP.
-- [ ] Risques jugés complets à ce stade.
+- [x] D31 à D35 tranchées.
+- [x] Le point §2 (limite de responsabilité) est jugé suffisamment clair et sera repris dans l'UX (Phase 4, amendement à intégrer en Phase 10) et les CGU.
+- [x] Mesures d'authentification/autorisation jugées adaptées au MVP.
+- [x] Risques jugés complets à ce stade.
+
+**Phase 7 validée le 2026-08-27.** Note : D33 introduit un amendement léger à la Phase 4 (UX) — ajout d'un rappel visible sur les écrans de publication de fiche et d'envoi de demande de contact, à intégrer lors du développement de ces écrans (Phase 10), sans remise en cause de l'architecture d'information validée. D34 introduit un jalon "Audit de sécurité" avant mise en production, à inscrire dans le backlog (Phase 9). → Passage à la Phase 8 (Organisation du dépôt).

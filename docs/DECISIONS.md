@@ -193,3 +193,33 @@ Format :
 - Phase : 6 — Modèle de données (amende la Phase 3)
 - Décision : Retrait de la messagerie interne du MVP (cf. amendement de D-005). Le contact Organisateur → Intervenant se fait via un formulaire simple : message saisi sur la fiche/le profil, envoyé par email à l'Intervenant, sans conversation persistée en base.
 - Conséquences : Le modèle de données MVP remplace les entités `Conversation`/`Message` par une entité unique `ContactRequest` (cf. `docs/06-modele-donnees.md`). La messagerie interne complète (D-005, D-023) redevient pertinente lors d'une itération post-MVP dédiée — le modèle actuel n'exclut pas cette évolution.
+
+## D-031 — Captcha sur les formulaires publics
+- Date : 2026-08-27
+- Phase : 7 — Sécurité
+- Décision : Pas de captcha au MVP ; throttling serveur seul (limite de requêtes par compte/IP).
+- Conséquences : Ajout d'un captcha (ex. Cloudflare Turnstile) à prévoir en évolution si des abus réels sont constatés après lancement.
+
+## D-032 — Durées de conservation des données
+- Date : 2026-08-27
+- Phase : 7 — Sécurité
+- Décision : `ContactRequest` conservées 2 ans puis purgées/anonymisées. Journal d'audit (`AdminAction`) conservé indéfiniment.
+- Conséquences : Prévoir un job de purge périodique des `ContactRequest` de plus de 2 ans en Phase 10 (tâche planifiée).
+
+## D-033 — Rappel produit sur la limite de vérification (mineurs)
+- Date : 2026-08-27
+- Phase : 7 — Sécurité
+- Décision : Rappel explicite et visible dans le produit (pas seulement en CGU) sur les écrans de publication de fiche et d'envoi de demande de contact : EduConnect ne vérifie pas les habilitations légales à intervenir auprès de mineurs.
+- Conséquences : Amendement léger à la Phase 4 (UX) — ajout de ce rappel sur les écrans concernés, à intégrer lors du développement (Phase 10). Formulation exacte à affiner avec un regard juridique avant lancement.
+
+## D-034 — Audit de sécurité avant lancement
+- Date : 2026-08-27
+- Phase : 7 — Sécurité
+- Décision : Audit de sécurité applicatif complet avant le tout premier lancement en production (plutôt qu'un simple durcissement itératif post-lancement).
+- Conséquences : Jalon "Audit sécurité" à inscrire explicitement dans le backlog (Phase 9), avant l'ouverture publique du MVP — impacte le calendrier de lancement.
+
+## D-035 — Politique de sauvegarde
+- Date : 2026-08-27
+- Phase : 7 — Sécurité
+- Décision : Sauvegardes quotidiennes de la base de données, rétention 7 jours, dès le MVP.
+- Conséquences : Configuration standard de l'hébergeur managé (Neon/Supabase), pas de développement spécifique nécessaire.
